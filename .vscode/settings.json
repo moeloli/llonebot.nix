@@ -3,6 +3,7 @@
     "bubblewrap",
     "bwrap",
     "clearenv",
+    "coreutils",
     "dbus",
     "dunst",
     "fetchurl",
