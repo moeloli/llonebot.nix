@@ -9,6 +9,7 @@
   # 基础环境设置脚本
   setupEnvironment = ''
     export PATH=${lib.makeBinPath (with pkgs; [ busybox xorg.xorgserver x11vnc dbus dunst ])}
+    export FFMPEG_PATH=${pkgs.ffmpeg}/bin/ffmpeg
     export HOME=/root
     export XDG_DATA_HOME=/root/.local/share
     export XDG_CONFIG_HOME=/root/.config
