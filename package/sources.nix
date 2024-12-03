@@ -1,6 +1,6 @@
 { ... }: {
   # Updated by ./update.sh - do not update manually!
-  # Last updated: 2024-11-27.
+  # Last updated: 2024-12-03.
 
   # ./update.sh qq 3.2.13_241121
   qq_amd64_url = "https://dldir1.qq.com/qqfile/qq/QQNT/Linux/QQ_3.2.13_241121_amd64_01.deb";
@@ -11,8 +11,8 @@
   LiteLoaderUrl = "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/1.2.3/LiteLoaderQQNT.zip";
   LiteLoaderHash = "sha256-xyI6cJuVFMHb/RHoka99GiB25T+IjUMUkJdfFw8PiBk=";
   # ./update.sh llonebot 4.4.1
-  LLOneBotUrl = "https://github.com/LLOneBot/LLOneBot/releases/download/v4.4.1/LLOneBot.zip";
-  LLOneBotHash = "sha256-zLmZo89Hu6K9TxaHmbmt/J+mNlW02ET5H85eri+Mqf8=";
+  LLOneBotUrl = "https://github.com/LLOneBot/LLOneBot/releases/download/v4.4.2/LLOneBot.zip";
+  LLOneBotHash = "sha256-n38dKlYNOx8N+WZxveZh0j/tKYs+QuuEpnaiXYTUvU4=";
   # ./update.sh whale 0.1.2
   WhaleUrl = "https://github.com/initialencounter/whale/releases/download/v0.1.2/whale.zip";
   WhaleHash = "sha256-152u+Gm7k2ql69Rq54zQ6DnM8nSbrXd4xWomV7SsDkM=";
