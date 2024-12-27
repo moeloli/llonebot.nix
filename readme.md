@@ -13,6 +13,13 @@
 docker run -p 3000:3000 -p 7081:7081 --privileged initialencounter/llonebot:latest
 ```
 
+## 快速体验
+
+```bash
+# 使用nix run
+nix run github:LLOneBot/llonebot.nix
+```
+
 ## Nix
 
 ```nix
