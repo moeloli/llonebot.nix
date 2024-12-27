@@ -75,7 +75,7 @@
 in {
   llonebot = pkgs.writeScriptBin "LLOneBot" ''
     #!${pkgs.runtimeShell}
-    mkdir -p ./LiteLoader /tmp
+    mkdir -p ./LiteLoader /tmp /data
     ${pkgs.bubblewrap}/bin/bwrap \
       --unshare-all \
       --share-net \
@@ -84,6 +84,7 @@ in {
       --clearenv \
       --ro-bind /nix/store /nix/store \
       --bind ./LiteLoader /LiteLoader/ \
+      --bind ./data /root/ \
       --proc /proc \
       --dev /dev \
       --tmpfs /tmp \
