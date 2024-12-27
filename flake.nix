@@ -32,7 +32,7 @@
       tag = "latest";
       copyToRoot = pkgs.buildEnv {
         name = "llonebot-env";
-        paths = [ common.llonebot pkgs.coreutils];
+        paths = [ common.llonebot pkgs.coreutils pkgs.bash];
       };
       config = {
         Cmd = [ "/bin/LLOneBot" ]; # 根据实际可执行文件路径调整
