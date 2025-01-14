@@ -64,7 +64,7 @@
     createService x11vnc 'x11vnc ${lib.concatStringsSep " " [
       "-forever" "-display :666"
       "-rfbport ${toString cfg.port}"
-      "-passwd ${cfg.vncpasswd}"
+      "-passwd $VNC_PASSWD"
     ]}'
     createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
     # 通知守护进程
@@ -76,12 +76,15 @@ in {
   llonebot = pkgs.writeScriptBin "LLOneBot" ''
     #!${pkgs.runtimeShell}
     mkdir -p ./LiteLoader /tmp /data
+    if [ -z "$VNC_PASSWD" ]; then
+      VNC_PASSWD=${cfg.vncpasswd}
+    fi
     ${pkgs.bubblewrap}/bin/bwrap \
       --unshare-all \
       --share-net \
       --as-pid-1 \
       --uid 0 --gid 0 \
-      --clearenv \
+      --setenv VNC_PASSWD $VNC_PASSWD \
       --ro-bind /nix/store /nix/store \
       --bind ./LiteLoader /LiteLoader/ \
       --bind ./data /root/ \
