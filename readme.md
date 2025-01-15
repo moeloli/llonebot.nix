@@ -10,7 +10,7 @@
 ```bash
 # VNC 端口 7081
 # OneBot HTTP 端口 3000
-docker run -p 3000:3000 -p 7081:7081 --privileged initialencounter/llonebot:latest
+docker run -p 3000:3000 -p 7081:7081 -e VNC_PASSWD=vncpassword --privileged initialencounter/llonebot:latest
 ```
 
 ## 快速体验
