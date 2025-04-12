@@ -27,7 +27,7 @@
     echo "root:x:0:0::/root:${pkgs.runtimeShell}" > /etc/passwd
     echo "root:x:0:" > /etc/group
     echo "nameserver 114.114.114.114" > /etc/resolv.conf
-    
+
     # 符号链接
     ln -s ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-bundle.crt
     ln -s ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-certificates.crt
@@ -86,6 +86,7 @@ in {
       --uid 0 --gid 0 \
       --setenv VNC_PASSWD $VNC_PASSWD \
       --ro-bind /nix/store /nix/store \
+      --ro-bind ${pkgs.tzdata}/share/zoneinfo/Asia/Shanghai /etc/localtime \
       --bind ./LiteLoader /LiteLoader/ \
       --bind ./data /root/ \
       --proc /proc \
