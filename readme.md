@@ -26,23 +26,38 @@ nix run github:LLOneBot/llonebot.nix
 # flake.nix
 {
   inputs = {
+    nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git/?ref=nixos-unstable";
     llonebot.url = "github:LLOneBot/llonebot.nix";
   };
 
-  outputs = { self, llonebot, ... }: {
-    packages.default = llonebot.lib.buildLLOneBot ./configuration.nix;
-  };
-}
-```
+  outputs = { nixpkgs, llonebot, ... }: {
+    nixosConfigurations.yourhostname = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ({ pkgs, config, ... }: let
+          llonebotConfig = {
+            vncport = 7081;
+            vncpassword = "mysecurepassword";  # 保留原密码
+          };
+          llonebotLib = llonebot.lib.${config.nixpkgs.system};
+          myLLOneBot = (llonebotLib.buildLLOneBot llonebotConfig).script;
+        in {
+          systemd.services.llonebot = {
+            enable = true;
+            description = "LLOneBot Service";
+            after = [ "network.target" ];
+            wantedBy = [ "multi-user.target" ];
 
-```nix
-# configuration.nix
-{ config, lib, pkgs, ... }:
-
-{
-  programs.llonebot = {
-    port = 8080;                            # 设置 VNC 端口
-    vncpasswd = "your-secure-password";     # 设置 VNC 密码
+            # 完全保留原服务配置
+            serviceConfig = {
+              ExecStart = "${myLLOneBot}/bin/LLOneBot";
+              Restart = "always";
+              User = "root";
+            };
+          };
+        })
+      ];
+    };
   };
 }
 ```
