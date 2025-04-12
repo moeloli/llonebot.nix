@@ -3,7 +3,7 @@
 # Link: https://github.com/Anillc/chronocat.nix/blob/master/modules/chronocat.nix
 
 { pkgs, lib, config, ... }: let
-  cfg = config.programs.llonebot;
+  cfg = config;
   packages = import ./packages.nix { inherit pkgs; sources = import ./sources.nix {}; };
 
   # 基础环境设置脚本
@@ -63,7 +63,7 @@
     createService xvfb 'Xvfb :666'
     createService x11vnc 'x11vnc ${lib.concatStringsSep " " [
       "-forever" "-display :666"
-      "-rfbport ${toString cfg.port}"
+      "-rfbport ${toString cfg.vncport}"
       "-passwd $VNC_PASSWD"
     ]}'
     createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
@@ -73,11 +73,11 @@
   '';
 
 in {
-  llonebot = pkgs.writeScriptBin "LLOneBot" ''
+  script = pkgs.writeScriptBin "LLOneBot" ''
     #!${pkgs.runtimeShell}
-    mkdir -p ./LiteLoader /tmp /data
+    mkdir -p ./LiteLoader /tmp ./data
     if [ -z "$VNC_PASSWD" ]; then
-      VNC_PASSWD=${cfg.vncpasswd}
+      VNC_PASSWD=${cfg.vncpassword}
     fi
     ${pkgs.bubblewrap}/bin/bwrap \
       --unshare-all \

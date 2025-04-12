@@ -35,6 +35,7 @@ if [ "$package" = "llonebot" ]; then
     hash=$(nix-prefetch-url $url)
     hash=$(nix hash to-sri --type sha256 "$hash")
     sed -i "s|# Last updated: .*\.|# Last updated: $(date +%F)\.|g" ./package/sources.nix
+    sed -i "s|LLOneBotVersion = \".*\";|LLOneBotVersion = \"$version\";|g" ./package/sources.nix
     sed -i "s|LLOneBotUrl = \".*\";|LLOneBotUrl = \"$url\";|g" ./package/sources.nix
     sed -i "s|LLOneBotHash = \".*\";|LLOneBotHash = \"$hash\";|g" ./package/sources.nix
 fi

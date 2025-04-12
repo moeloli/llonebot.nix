@@ -31,7 +31,7 @@
 in {
   patched = pkgs.qq.overrideAttrs (old: {
     buildInputs = (old.buildInputs or []) ++ [ pkgs.unzip pkgs.pkgsStatic.musl ];
-    version = "3.2.13-2024.11.21";
+    version = "${sources.qq_version}-llonebot-${sources.LLOneBotVersion}";
     inherit src;
     postFixup = ''
       mkdir -p $out/LiteLoader/plugins

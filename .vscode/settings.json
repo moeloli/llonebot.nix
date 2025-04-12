@@ -20,7 +20,6 @@
     "srcs",
     "stdenv",
     "tmpfs",
-    "vncpasswd",
     "vncpassword",
     "xorg",
     "xorgserver"
