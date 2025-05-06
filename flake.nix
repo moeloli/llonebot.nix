@@ -1,38 +1,53 @@
 {
   description = "llonebot.nix";
-  outputs = {
-    self, nixpkgs, flake-utils,
-  }: flake-utils.lib.eachDefaultSystem (system: let
-    pkgs = import nixpkgs { inherit system; };
-    
-    # 直接定义默认包
-    defaultConfig = {
-      vncport = 7081;
-      vncpassword = "vncpassword";
-    };
-    
-  in rec {
-    devShells.default = pkgs.mkShell {};
-    
-    lib.buildLLOneBot = config: pkgs.callPackage ./package { inherit config; };
 
-    packages = {
-      # 默认包使用默认配置
-      default = (lib.buildLLOneBot defaultConfig).script;
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system: let
+      pkgs = import nixpkgs { inherit system; };
       
-      # 添加 Docker 镜像构建
-      dockerImage = pkgs.dockerTools.buildImage {
-        name = "llonebot";
-        tag = "latest";
-        copyToRoot = pkgs.buildEnv {
-          name = "llonebot-env";
-          paths = [ packages.default pkgs.coreutils pkgs.bash];
+      # 默认配置
+      defaultConfig = {
+        vncport = 7081;
+        vncpassword = "vncpassword";
+      };
+
+      # 跨系统构建函数
+      buildForTarget = targetSystem: let
+        pkgsCross = import nixpkgs {
+          system = "x86_64-linux";  # 构建主机系统
+          crossSystem.system = targetSystem;  # 目标系统（aarch64-linux）
         };
-        config = {
-          Cmd = [ "/bin/LLOneBot" ]; # 根据实际可执行文件路径调整
-          Expose = [ "7081" ]; # 曝露端口
+      in rec {
+        llonebot = pkgsCross.callPackage ./package { config = defaultConfig; };
+        
+        dockerImage = pkgsCross.dockerTools.buildImage {
+          name = "llonebot";
+          tag = "latest";
+          copyToRoot = pkgsCross.buildEnv {
+            name = "llonebot-env";
+            paths = [ llonebot.script pkgsCross.coreutils pkgsCross.bash ];
+          };
+          config = {
+            Cmd = [ "/bin/LLOneBot" ];  # 根据实际路径调整
+            ExposedPorts = { "${toString defaultConfig.vncport}/tcp" = {}; };
+          };
         };
       };
-    };
-  });
+
+    in rec {
+      devShells.default = pkgs.mkShell {};
+
+      lib.buildLLOneBot = config: pkgs.callPackage ./package { inherit config; };
+
+      packages.default = (lib.buildLLOneBot defaultConfig).script;
+
+      packages.dockerImage = (buildForTarget system).dockerImage;
+
+      packages.dockerImageAarch64 = (buildForTarget "aarch64-linux").dockerImage;
+    });
 }
