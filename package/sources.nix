@@ -1,6 +1,6 @@
 { ... }: {
   # Updated by ./update.sh - do not update manually!
-  # Last updated: 2025-05-14.
+  # Last updated: 2025-05-15.
 
   # ./update.sh qq 3.2.13_241121
   qq_version = "3.2.17_250429";
@@ -16,6 +16,6 @@
   LLOneBotUrl = "https://github.com/LLOneBot/LLOneBot/releases/download/v4.9.4/LLOneBot.zip";
   LLOneBotHash = "sha256-oGqIqHFilUV+IoB611yafnKkj49U3+AxOKU46Znt4wA=";
   # ./update.sh whale 0.1.2
-  WhaleUrl = "https://github.com/initialencounter/whale/releases/download/v0.1.2/whale.zip";
-  WhaleHash = "sha256-152u+Gm7k2ql69Rq54zQ6DnM8nSbrXd4xWomV7SsDkM=";
+  WhaleUrl = "https://github.com/initialencounter/whale/releases/download/v0.1.3/whale.zip";
+  WhaleHash = "sha256-GtZuew1uZjxYy4DlQ/ntaw0/dSniMwoWTN3QD2uWslk=";
 } 
