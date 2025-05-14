@@ -76,3 +76,10 @@ docker logs llonebot
 使用 VNC客户端连接 localhost:7081 或者 docker 宿主机 ip:7081 登录，**注意：不是用浏览器打开localhost:7081**！
 
 默认密码是 `vncpassword`
+
+
+### noVNC
+
+浏览器打开 http://<宿主机IP>:5900/vnc.html
+
+默认密码是 `vncpassword`

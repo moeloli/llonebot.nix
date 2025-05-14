@@ -10,6 +10,7 @@
       vncport = 7081;
       vncpassword = "vncpassword";
       display = ":666";
+      novncport = 5900;
     };
     
   in rec {

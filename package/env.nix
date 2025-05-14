@@ -18,7 +18,8 @@
     export DISPLAY='${toString cfg.display}'
 
     # 从环境变量设置 VNC 密码
-    : ''${VNC_PASSWD:=${toString cfg.vncpassword}}
+    : ''${VNC_PASSWD:="${toString cfg.vncpassword}"}
+    export ENV_VNC_PASSWD=$VNC_PASSWD
   '';
 
   # 创建必要的目录和文件
@@ -68,8 +69,10 @@
     createService x11vnc 'x11vnc ${lib.concatStringsSep " " [
       "-forever" "-display ${toString cfg.display}"
       "-rfbport ${toString cfg.vncport}"
-      "-passwd \"$VNC_PASSWD\""
+      "-passwd \"$ENV_VNC_PASSWD\""
+      "-shared"
     ]}'
+    createService novnc '${pkgs.novnc}/bin/novnc --listen ${toString cfg.novncport} --vnc localhost:${toString cfg.vncport}'
     createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
     # 通知守护进程
     createService dunst 'dunst'
