@@ -9,6 +9,7 @@
     defaultConfig = {
       vncport = 7081;
       vncpassword = "vncpassword";
+      display = ":666";
     };
     
   in rec {

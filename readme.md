@@ -10,7 +10,7 @@
 ```bash
 # VNC 端口 7081
 # OneBot HTTP 端口 3000
-docker run -p 3000:3000 -p 7081:7081 -e VNC_PASSWD=vncpassword --privileged initialencounter/llonebot:latest
+docker run -p 3000:3000 -p 7081:7081 -e VNC_PASSWD=vncpassword initialencounter/llonebot:latest
 ```
 
 ## 快速体验
@@ -38,6 +38,7 @@ nix run github:LLOneBot/llonebot.nix
           llonebotConfig = {
             vncport = 7081;
             vncpassword = "mysecurepassword";  # 保留原密码
+            display = ":666";
           };
           llonebotLib = llonebot.lib.${config.nixpkgs.system};
           myLLOneBot = (llonebotLib.buildLLOneBot llonebotConfig).script;

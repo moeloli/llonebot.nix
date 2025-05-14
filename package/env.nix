@@ -15,7 +15,10 @@
     export XDG_CONFIG_HOME=/root/.config
     export TERM=xterm
     export DBUS_SESSION_BUS_ADDRESS='unix:path=/run/dbus/system_bus_socket'
-    export DISPLAY=':666'
+    export DISPLAY='${toString cfg.display}'
+
+    # 从环境变量设置 VNC 密码
+    : ''${VNC_PASSWD:=${toString cfg.vncpassword}}
   '';
 
   # 创建必要的目录和文件
@@ -47,6 +50,7 @@
   # 安装 LiteLoader
   setupLiteLoader = ''
     if [ ! -f /LiteLoader/package.json ]; then
+      mkdir -p /LiteLoader
       cp -rf ${packages.patched}/LiteLoader/* /LiteLoader/
     fi
   '';
@@ -60,11 +64,11 @@
     }
 
     # 创建各个服务
-    createService xvfb 'Xvfb :666'
+    createService xvfb 'Xvfb ${toString cfg.display}'
     createService x11vnc 'x11vnc ${lib.concatStringsSep " " [
-      "-forever" "-display :666"
+      "-forever" "-display ${toString cfg.display}"
       "-rfbport ${toString cfg.vncport}"
-      "-passwd $VNC_PASSWD"
+      "-passwd \"$VNC_PASSWD\""
     ]}'
     createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
     # 通知守护进程
@@ -75,34 +79,14 @@
 in {
   script = pkgs.writeScriptBin "LLOneBot" ''
     #!${pkgs.runtimeShell}
-    mkdir -p ./LiteLoader /tmp ./data
-    if [ -z "$VNC_PASSWD" ]; then
-      VNC_PASSWD=${cfg.vncpassword}
-    fi
-    ${pkgs.bubblewrap}/bin/bwrap \
-      --unshare-all \
-      --share-net \
-      --as-pid-1 \
-      --uid 0 --gid 0 \
-      --setenv VNC_PASSWD $VNC_PASSWD \
-      --ro-bind /nix/store /nix/store \
-      --ro-bind ${pkgs.tzdata}/share/zoneinfo/Asia/Shanghai /etc/localtime \
-      --bind ./LiteLoader /LiteLoader/ \
-      --bind ./data /root/ \
-      --proc /proc \
-      --dev /dev \
-      --tmpfs /tmp \
-      ${pkgs.writeScript "sandbox" ''
-        #!${pkgs.runtimeShell}
-        
-        ${setupEnvironment}
-        ${setupDirectories}
-        ${setupDbus}
-        ${setupLiteLoader}
-        ${servicesScript}
-        
-        # 启动所有服务
-        runsvdir /services
-      ''} "$@"
+
+    ${setupEnvironment}
+    ${setupDirectories}
+    ${setupDbus}
+    ${setupLiteLoader}
+    ${servicesScript}
+    
+    # 启动所有服务
+    runsvdir /services
   '';
 } 
