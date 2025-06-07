@@ -2,13 +2,34 @@
 # Original Author: Anillc
 # Link: https://github.com/Anillc/chronocat.nix/blob/master/modules/chronocat.nix
 
-{ pkgs, lib, config, ... }: let
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
+let
   cfg = config;
-  packages = import ./packages.nix { inherit pkgs; sources = import ./sources.nix {}; };
-
+  pmhq = pkgs.callPackage ./pmhq.nix { inherit pkgs lib; };
+  llonebot = pkgs.callPackage ./llonebot.nix { inherit pkgs lib; };
+  fonts = pkgs.makeFontsConf {
+    fontDirectories = with pkgs; [ source-han-sans ];
+  };
   # 基础环境设置脚本
   setupEnvironment = ''
-    export PATH=${lib.makeBinPath (with pkgs; [ busybox xorg.xorgserver x11vnc dbus dunst ])}
+    export PATH=${
+      lib.makeBinPath (
+        with pkgs;
+        [
+          nodejs
+          busybox
+          xorg.xorgserver
+          x11vnc
+          dbus
+          dunst
+        ]
+      )
+    }
     export FFMPEG_PATH=${pkgs.ffmpeg}/bin/ffmpeg
     export HOME=/root
     export XDG_DATA_HOME=/root/.local/share
@@ -16,6 +37,7 @@
     export TERM=xterm
     export DBUS_SESSION_BUS_ADDRESS='unix:path=/run/dbus/system_bus_socket'
     export DISPLAY='${toString cfg.display}'
+    export LIBGL_ALWAYS_SOFTWARE=1
 
     # 从环境变量设置 VNC 密码
     : ''${VNC_PASSWD:="${toString cfg.vncpassword}"}
@@ -26,7 +48,7 @@
   setupDirectories = ''
     mkdir -p /root/{.local/share,.config} /etc/{ssl/certs,fonts,dbus} /run/dbus
     mkdir -p /tmp /usr/bin /bin
-    
+
     # 基础系统文件
     echo "root:x:0:0::/root:${pkgs.runtimeShell}" > /etc/passwd
     echo "root:x:0:" > /etc/group
@@ -35,7 +57,7 @@
     # 符号链接
     ln -s ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-bundle.crt
     ln -s ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-certificates.crt
-    ln -s ${packages.fonts} /etc/fonts/fonts.conf
+    ln -s ${fonts} /etc/fonts/fonts.conf
     ln -s $(which env) /usr/bin/env
     ln -s $(which sh) /bin/sh
   '';
@@ -48,14 +70,6 @@
     rm -rf /run/dbus/pid
   '';
 
-  # 安装 LiteLoader
-  setupLiteLoader = ''
-    if [ ! -f /LiteLoader/package.json ]; then
-      mkdir -p /LiteLoader
-      cp -rf ${packages.patched}/LiteLoader/* /LiteLoader/
-    fi
-  '';
-
   # 创建服务函数
   servicesScript = ''
     createService() {
@@ -66,30 +80,34 @@
 
     # 创建各个服务
     createService xvfb 'Xvfb ${toString cfg.display}'
-    createService x11vnc 'x11vnc ${lib.concatStringsSep " " [
-      "-forever" "-display ${toString cfg.display}"
-      "-rfbport ${toString cfg.vncport}"
-      "-passwd \"$ENV_VNC_PASSWD\""
-      "-shared"
-    ]}'
+    createService x11vnc 'x11vnc ${
+      lib.concatStringsSep " " [
+        "-forever"
+        "-display ${toString cfg.display}"
+        "-rfbport ${toString cfg.vncport}"
+        "-passwd \"$ENV_VNC_PASSWD\""
+        "-shared"
+      ]
+    }'
     createService novnc '${pkgs.novnc}/bin/novnc --listen ${toString cfg.novncport} --vnc localhost:${toString cfg.vncport}'
     createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
     # 通知守护进程
     createService dunst 'dunst'
-    createService program "${packages.patched}/bin/qq --no-sandbox $@"
+    createService pmhq "${pmhq}/bin/pmhq"
+    createService llonebot "${llonebot}/bin/llonebot"
   '';
 
-in {
-  script = pkgs.writeScriptBin "LLOneBot" ''
+in
+{
+  script = pkgs.writeScriptBin "env" ''
     #!${pkgs.runtimeShell}
 
     ${setupEnvironment}
     ${setupDirectories}
     ${setupDbus}
-    ${setupLiteLoader}
     ${servicesScript}
-    
+
     # 启动所有服务
     runsvdir /services
   '';
-} 
+}

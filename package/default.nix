@@ -1,5 +1,13 @@
-{ config, pkgs, lib, ... }: let
+{
+  config,
+  pkgs,
+  lib,
+  stdenv,
+  ...
+}:
+let
   env = import ./env.nix { inherit pkgs lib config; };
-in {
+in
+{
   inherit (env) script;
-} 
+}
