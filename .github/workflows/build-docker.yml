@@ -1,5 +1,14 @@
-name: build
-on: [workflow_dispatch]
+name: build and push docker image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '请填写发布Releases的版本号（留空不发布）'
+        required: true
+
+env:
+  TAG: "${{ github.event.inputs.tag }}"
 
 jobs:
   build:
@@ -22,4 +31,6 @@ jobs:
     - name: Push Docker Image
       run: |
         docker tag llonebot:latest initialencounter/llonebot:latest
+        docker tag llonebot:latest initialencounter/llonebot:${{ env.TAG }}
         docker push initialencounter/llonebot:latest
+        docker push initialencounter/llonebot:${{ env.TAG }}
