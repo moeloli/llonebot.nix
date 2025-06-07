@@ -19,24 +19,6 @@ if [ "$package" = "pmhq" ]; then
     sed -i "s|pmhq_arm64_hash = \".*\";|pmhq_arm64_hash = \"$arm64_hash\";|g" ./package/sources.nix
 fi
 
-if [ "$package" = "qq" ]; then
-    amd64_url="https://dldir1.qq.com/qqfile/qq/QQNT/Linux/QQ_${version}_amd64_01.deb"
-    arm64_url="https://dldir1.qq.com/qqfile/qq/QQNT/Linux/QQ_${version}_arm64_01.deb"
-
-    # use friendlier hashes
-    amd64_hash=$(nix-prefetch-url $amd64_url)
-    arm64_hash=$(nix-prefetch-url $arm64_url)
-    amd64_hash=$(nix hash convert --hash-algo sha256 "$amd64_hash")
-    arm64_hash=$(nix hash convert --hash-algo sha256 "$arm64_hash")
-    
-    sed -i "s|# Last updated: .*\.|# Last updated: $(date +%F)\.|g" ./package/sources.nix
-    sed -i "s|qq_version = \".*\";|qq_version = \"$version\";|g" ./package/sources.nix
-    sed -i "s|qq_amd64_url = \".*\";|qq_amd64_url = \"$amd64_url\";|g" ./package/sources.nix
-    sed -i "s|qq_amd64_hash = \".*\";|qq_amd64_hash = \"$amd64_hash\";|g" ./package/sources.nix
-    sed -i "s|qq_arm64_url = \".*\";|qq_arm64_url = \"$arm64_url\";|g" ./package/sources.nix
-    sed -i "s|qq_arm64_hash = \".*\";|qq_arm64_hash = \"$arm64_hash\";|g" ./package/sources.nix
-fi
-
 if [ "$package" = "llonebot" ]; then
     url="https://github.com/LLOneBot/LLOneBot/releases/download/v$version/LLOneBot.zip"
     hash=$(nix-prefetch-url $url)
