@@ -84,11 +84,10 @@ stdenv.mkDerivation {
     mkdir -p $out/bin
     cp -r opt $out/opt
     cp -r usr/share $out/share
-    mv $out/opt/QQ/qq $out/opt/QQ/source-qq
     substituteInPlace $out/share/applications/qq.desktop \
       --replace-fail "/opt/QQ/qq" "$out/opt/QQ/qq" \
       --replace-fail "/usr/share" "$out/share"
-    makeShellWrapper $out/opt/QQ/source-qq $out/opt/QQ/qq \
+    makeShellWrapper $out/opt/QQ/qq $out/opt/QQ/qq-wrapper \
       --prefix XDG_DATA_DIRS : "$GSETTINGS_SCHEMAS_PATH" \
       --prefix LD_PRELOAD : "${lib.makeLibraryPath [ libssh2 ]}/libssh2.so.1" \
       --prefix LD_LIBRARY_PATH : "${

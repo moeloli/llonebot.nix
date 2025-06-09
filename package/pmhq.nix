@@ -68,8 +68,8 @@ pkgs.stdenv.mkDerivation rec {
     mkdir -p $out/bin
     mv pmhq-linux-* $out/bin/source-pmhq
     chmod +x $out/bin/source-pmhq
-    head -n -1 ${qq}/opt/QQ/qq > $out/bin/pmhq
-    echo "$out/bin/source-pmhq ${qq}/opt/QQ/source-qq" >> $out/bin/pmhq
+    head -n -1 ${qq}/opt/QQ/qq-wrapper > $out/bin/pmhq
+    echo "$out/bin/source-pmhq ${qq}/opt/QQ/qq" >> $out/bin/pmhq
     chmod +x $out/bin/pmhq
   '';
 
