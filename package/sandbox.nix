@@ -2,9 +2,14 @@
   pkgs,
   lib,
   config,
-  llonebot-service,
   ...
 }:
+let
+  llonebot-service =
+    (pkgs.callPackage ./llonebot-service.nix {
+      inherit config;
+    }).service;
+in
 rec {
   sandbox = pkgs.writeScriptBin "sandbox" ''
     #!${pkgs.runtimeShell}
