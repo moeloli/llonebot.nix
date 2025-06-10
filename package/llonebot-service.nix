@@ -10,7 +10,13 @@
 }:
 let
   cfg = config;
-  pmhq = pkgs.callPackage ./pmhq.nix { inherit pkgs lib; };
+  pmhq = pkgs.callPackage ./pmhq.nix {
+    inherit pkgs lib;
+    config = {
+      host = config.pmhq_host;
+      port = config.pmhq_port;
+    };
+  };
   llonebot-js = pkgs.callPackage ./llonebot-js.nix { inherit pkgs lib; };
   fonts = pkgs.makeFontsConf {
     fontDirectories = with pkgs; [ source-han-sans ];

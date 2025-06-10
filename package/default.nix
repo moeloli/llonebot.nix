@@ -1,11 +1,18 @@
 {
   pkgs,
   lib,
-  pmhq,
+  config,
   ...
 }:
 rec {
   llonebot-js = pkgs.callPackage ./llonebot-js.nix { };
+
+  pmhq = pkgs.callPackage ./pmhq.nix {
+    config = {
+      host = config.pmhq_host;
+      port = config.pmhq_port;
+    };
+  };
 
   llonebot = pkgs.writeScriptBin "llonebot" ''
     #!${pkgs.runtimeShell}

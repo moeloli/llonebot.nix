@@ -17,6 +17,8 @@
           vncpassword = "vncpassword";
           display = ":666";
           novncport = 5900;
+          pmhq_host = "0.0.0.0";
+          pmhq_port = 13000;
         };
 
       in
@@ -28,9 +30,17 @@
         llonebot-service = (lib.buildLLOneBot defaultConfig).service;
 
         packages = rec {
-          pmhq = pkgs.callPackage ./package/pmhq.nix { };
+          pmhq = pkgs.callPackage ./package/pmhq.nix {
+            config = {
+              host = defaultConfig.pmhq_host;
+              port = defaultConfig.pmhq_port;
+            };
+          };
 
-          default = (pkgs.callPackage ./package/default.nix { inherit pmhq; }).llonebot;
+          default =
+            (pkgs.callPackage ./package/default.nix {
+              config = defaultConfig;
+            }).llonebot;
 
           # 添加 Docker 镜像构建
           dockerImage = pkgs.dockerTools.buildImage {

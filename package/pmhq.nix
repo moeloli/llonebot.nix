@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 let
   qq = pkgs.callPackage ./qq/package.nix {
     libgbm = pkgs.mesa.drivers; # 显式传递 libgbm
@@ -71,7 +71,7 @@ pkgs.stdenv.mkDerivation rec {
     head -n -1 ${qq}/opt/QQ/qq-wrapper > $out/bin/pmhq
     echo "$out/bin/source-pmhq" >> $out/bin/pmhq
     chmod +x $out/bin/pmhq
-    echo "{\"qq_path\": \"${qq}/opt/QQ/qq\",\"servers\": [],\"default_host\": \"0.0.0.0\",\"default_port\": 13000}" > $out/bin/pmhq_config.json
+    echo "{\"qq_path\": \"${qq}/opt/QQ/qq\",\"servers\": [],\"default_host\": \"${config.host}\",\"default_port\": ${toString config.port}}" > $out/bin/pmhq_config.json
   '';
 
   meta = with lib; {
