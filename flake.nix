@@ -25,9 +25,12 @@
       rec {
         devShells.default = pkgs.mkShell { };
 
-        lib.buildLLOneBot = config: pkgs.callPackage ./package/llonebot-service.nix { inherit config; };
+        lib.buildLLOneBot = config: pkgs.callPackage ./package/default.nix { inherit config; };
 
-        llonebot-service = (lib.buildLLOneBot defaultConfig).service;
+        llonebot-service =
+          (pkgs.callPackage ./package/llonebot-service.nix {
+            config = defaultConfig;
+          }).service;
 
         packages = rec {
           pmhq = pkgs.callPackage ./package/pmhq.nix {
@@ -37,10 +40,7 @@
             };
           };
 
-          default =
-            (pkgs.callPackage ./package/default.nix {
-              config = defaultConfig;
-            }).llonebot;
+          default = (lib.buildLLOneBot defaultConfig).llonebot;
 
           # 添加 Docker 镜像构建
           dockerImage = pkgs.dockerTools.buildImage {
