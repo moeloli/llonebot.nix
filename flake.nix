@@ -27,35 +27,6 @@
 
         packages = {
           llonebot = pkgs.callPackage ./package/llonebot.nix { };
-          qq = pkgs.callPackage ./package/qq/package.nix {
-            libgbm = pkgs.mesa.drivers; # 显式传递 libgbm
-            inherit (pkgs)
-              alsa-lib
-              libuuid
-              cups
-              dpkg
-              fetchurl
-              glib
-              libssh2
-              gtk3
-              libayatana-appindicator
-              libdrm
-              libgcrypt
-              libkrb5
-              libnotify
-              libpulseaudio
-              libGL
-              nss
-              xorg
-              systemd
-              vips
-              at-spi2-core
-              autoPatchelfHook
-              makeShellWrapper
-              wrapGAppsHook3
-              ;
-            commandLineArgs = ""; # 可选参数
-          };
           pmhq = pkgs.callPackage ./package/pmhq.nix { };
           # 默认包使用默认配置
           default = pkgs.writeScriptBin "bwrap-env" ''
