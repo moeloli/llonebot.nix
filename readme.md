@@ -64,12 +64,6 @@ nix run github:LLOneBot/llonebot.nix
 ```
 
 ## 登录
-### 终端扫码
-
-```bash
-# 使用终端扫码登录
-docker logs llonebot
-```
 
 ### VNC
 
