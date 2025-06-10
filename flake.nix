@@ -23,7 +23,9 @@
       rec {
         devShells.default = pkgs.mkShell { };
 
-        lib.buildLLOneBot = config: pkgs.callPackage ./package/env.nix { inherit config; };
+        lib.buildLLOneBot = config: pkgs.callPackage ./package/llonebot-service.nix { inherit config; };
+
+        llonebot-service = (lib.buildLLOneBot defaultConfig).service;
 
         packages = {
           llonebot = pkgs.callPackage ./package/llonebot.nix { };
@@ -47,7 +49,7 @@
               --proc /proc \
               --dev /dev \
               --tmpfs /tmp \
-              ${(lib.buildLLOneBot defaultConfig).script}/bin/llonebot-env
+              ${llonebot-service}/bin/llonebot-service
           '';
 
           # 添加 Docker 镜像构建
@@ -57,13 +59,13 @@
             copyToRoot = pkgs.buildEnv {
               name = "llonebot-env";
               paths = [
-                (lib.buildLLOneBot defaultConfig).script
+                llonebot-service
                 pkgs.coreutils
                 pkgs.bash
               ];
             };
             config = {
-              Cmd = [ "/bin/llonebot-env" ]; # 根据实际可执行文件路径调整
+              Cmd = [ "/bin/llonebot-service" ]; # 根据实际可执行文件路径调整
               Expose = [
                 "3000"
                 "3001"

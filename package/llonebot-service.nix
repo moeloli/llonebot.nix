@@ -103,7 +103,7 @@ let
 
 in
 {
-  script = pkgs.writeScriptBin "llonebot-env" ''
+  service = pkgs.writeScriptBin "llonebot-service" ''
     #!${pkgs.runtimeShell}
 
     ${setupEnvironment}
