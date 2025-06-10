@@ -23,7 +23,7 @@
       rec {
         devShells.default = pkgs.mkShell { };
 
-        lib.buildLLOneBot = config: pkgs.callPackage ./package { inherit config; };
+        lib.buildLLOneBot = config: pkgs.callPackage ./package/env.nix { inherit config; };
 
         packages = {
           llonebot = pkgs.callPackage ./package/llonebot.nix { };
