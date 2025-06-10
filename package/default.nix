@@ -25,6 +25,9 @@ rec {
 
     ${pmhq}/bin/pmhq &
 
-    cd ~/.config/llonebot && ${pkgs.nodejs}/bin/node llonebot.js --pmhq-host=127.0.0.1 --pmhq-port=13000
+    cd ~/.config/llonebot && \
+      ${pkgs.nodejs}/bin/node llonebot.js \
+      --pmhq-host=${config.pmhq_host} \
+      --pmhq-port=${toString config.pmhq_port}
   '';
 }

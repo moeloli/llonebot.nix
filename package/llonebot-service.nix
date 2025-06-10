@@ -104,7 +104,7 @@ let
     # 通知守护进程
     createService dunst 'dunst'
     createService pmhq "${pmhq}/bin/pmhq"
-    createService llonebot "cd /root/llonebot && node llonebot.js --pmhq-host=127.0.0.1 --pmhq-port=13000"
+    createService llonebot "cd /root/llonebot && node llonebot.js --pmhq-host=${cfg.pmhq_host} --pmhq-port=${toString cfg.pmhq_port}"
   '';
 
 in
