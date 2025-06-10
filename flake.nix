@@ -26,7 +26,7 @@
         lib.buildLLOneBot = config: pkgs.callPackage ./package { inherit config; };
 
         packages = {
-          llonebot = pkgs.callPackage ./package/llonebot.nix {};
+          llonebot = pkgs.callPackage ./package/llonebot.nix { };
           qq = pkgs.callPackage ./package/qq/package.nix {
             libgbm = pkgs.mesa.drivers; # 显式传递 libgbm
             inherit (pkgs)
@@ -60,7 +60,7 @@
           # 默认包使用默认配置
           default = pkgs.writeScriptBin "bwrap-env" ''
             #!${pkgs.runtimeShell}
-            mkdir -p ./LiteLoader /tmp ./data
+            mkdir -p /tmp ./data
             if [ -z "$VNC_PASSWD" ]; then
               VNC_PASSWD=${defaultConfig.vncpassword}
             fi
@@ -72,7 +72,6 @@
               --setenv VNC_PASSWD $VNC_PASSWD \
               --ro-bind /nix/store /nix/store \
               --ro-bind ${pkgs.tzdata}/share/zoneinfo/Asia/Shanghai /etc/localtime \
-              --bind ./LiteLoader /LiteLoader/ \
               --bind ./data /root/ \
               --proc /proc \
               --dev /dev \
