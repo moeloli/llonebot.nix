@@ -21,6 +21,7 @@ pkgs.stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out
     mv js $out/js
+    sed -i 's|"onlyLocalhost": true|"onlyLocalhost": false|' $out/js/default_config.json
   '';
 
   meta = with lib; {

@@ -69,8 +69,9 @@ pkgs.stdenv.mkDerivation rec {
     mv pmhq-linux-* $out/bin/source-pmhq
     chmod +x $out/bin/source-pmhq
     head -n -1 ${qq}/opt/QQ/qq-wrapper > $out/bin/pmhq
-    echo "$out/bin/source-pmhq ${qq}/opt/QQ/qq" >> $out/bin/pmhq
+    echo "$out/bin/source-pmhq" >> $out/bin/pmhq
     chmod +x $out/bin/pmhq
+    echo "{\"qq_path\": \"${qq}/opt/QQ/qq\",\"servers\": [],\"default_host\": \"0.0.0.0\",\"default_port\": 13000}" > $out/bin/pmhq_config.json
   '';
 
   meta = with lib; {
