@@ -86,7 +86,7 @@
             copyToRoot = pkgs.buildEnv {
               name = "llonebot-env";
               paths = [
-                packages.default
+                (lib.buildLLOneBot defaultConfig).script
                 pkgs.coreutils
                 pkgs.bash
               ];
