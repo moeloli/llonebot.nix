@@ -57,46 +57,8 @@ nix run github:LLOneBot/llonebot.nix
 
 ## Nix
 
-```nix
-# flake.nix
-{
-  inputs = {
-    nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git/?ref=nixos-unstable";
-    llonebot.url = "github:LLOneBot/llonebot.nix";
-  };
-
-  outputs = { nixpkgs, llonebot, ... }: {
-    nixosConfigurations.yourhostname = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        ({ pkgs, config, ... }: let
-          llonebotConfig = {
-            vncport = 7081;
-            vncpassword = "mysecurepassword";  # 保留原密码
-            display = ":666";
-          };
-          llonebotLib = llonebot.lib.${config.nixpkgs.system};
-          myLLOneBot = (llonebotLib.buildLLOneBot llonebotConfig).script;
-        in {
-          systemd.services.llonebot = {
-            enable = true;
-            description = "LLOneBot Service";
-            after = [ "network.target" ];
-            wantedBy = [ "multi-user.target" ];
-
-            # 完全保留原服务配置
-            serviceConfig = {
-              ExecStart = "${myLLOneBot}/bin/LLOneBot";
-              Restart = "always";
-              User = "root";
-            };
-          };
-        })
-      ];
-    };
-  };
-}
-```
+此方法需要安装桌面环境，使用命令 `llonebot` 启动
+[example.nix](./example.nix)
 
 ## 登录
 
