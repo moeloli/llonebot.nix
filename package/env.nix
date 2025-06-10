@@ -93,7 +93,7 @@ let
         "-shared"
       ]
     }'
-    createService novnc '${pkgs.novnc}/bin/novnc --listen ${toString cfg.novncport} --vnc localhost:${toString cfg.vncport}'
+    createService novnc '${pkgs.novnc}/bin/novnc --listen ${toString cfg.novncport} --vnc 127.0.0.1:${toString cfg.vncport}'
     createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
     # 通知守护进程
     createService dunst 'dunst'
