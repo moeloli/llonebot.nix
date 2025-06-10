@@ -42,6 +42,13 @@
 
           default = (lib.buildLLOneBot defaultConfig).llonebot;
 
+          # TODO PMHQ 存在无法监听端口的问题
+          sandbox =
+            (pkgs.callPackage ./package/sandbox.nix {
+              config = defaultConfig;
+              inherit llonebot-service;
+            }).sandbox;
+
           # 添加 Docker 镜像构建
           dockerImage = pkgs.dockerTools.buildImage {
             name = "llonebot";
