@@ -27,30 +27,10 @@
 
         llonebot-service = (lib.buildLLOneBot defaultConfig).service;
 
-        packages = {
-          llonebot = pkgs.callPackage ./package/llonebot.nix { };
+        packages = rec {
           pmhq = pkgs.callPackage ./package/pmhq.nix { };
-          # 默认包使用默认配置
-          default = pkgs.writeScriptBin "bwrap-env" ''
-            #!${pkgs.runtimeShell}
-            mkdir -p /tmp ./data
-            if [ -z "$VNC_PASSWD" ]; then
-              VNC_PASSWD=${defaultConfig.vncpassword}
-            fi
-            ${pkgs.bubblewrap}/bin/bwrap \
-              --unshare-all \
-              --share-net \
-              --as-pid-1 \
-              --uid 0 --gid 0 \
-              --setenv VNC_PASSWD $VNC_PASSWD \
-              --ro-bind /nix/store /nix/store \
-              --ro-bind ${pkgs.tzdata}/share/zoneinfo/Asia/Shanghai /etc/localtime \
-              --bind ./data /root/ \
-              --proc /proc \
-              --dev /dev \
-              --tmpfs /tmp \
-              ${llonebot-service}/bin/llonebot-service
-          '';
+
+          default = (pkgs.callPackage ./package/default.nix { inherit pmhq; }).llonebot;
 
           # 添加 Docker 镜像构建
           dockerImage = pkgs.dockerTools.buildImage {
