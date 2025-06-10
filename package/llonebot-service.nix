@@ -59,6 +59,8 @@ let
     echo "root:x:0:0::/root:${pkgs.runtimeShell}" > /etc/passwd
     echo "root:x:0:" > /etc/group
     echo "nameserver 114.114.114.114" > /etc/resolv.conf
+    echo "127.0.0.1 localhost" >> /etc/hosts
+    echo "::1 localhost" >> /etc/hosts
 
     # 符号链接
     ln -s ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-bundle.crt

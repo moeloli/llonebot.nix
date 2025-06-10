@@ -42,7 +42,6 @@
 
           default = (lib.buildLLOneBot defaultConfig).llonebot;
 
-          # TODO PMHQ 存在无法监听端口的问题
           sandbox =
             (pkgs.callPackage ./package/sandbox.nix {
               config = defaultConfig;
