@@ -1,6 +1,6 @@
 { ... }: {
   # Updated by ./update.sh - do not update manually!
-  # Last updated: 2025-06-07.
+  # Last updated: 2025-06-10.
 
   # ./update.sh pmhq 2.0.0
   pmhq_version = "2.0.0";
@@ -15,7 +15,7 @@
   qq_arm64_url = "https://dldir1.qq.com/qqfile/qq/QQNT/Linux/QQ_3.2.17_250429_arm64_01.deb";
   qq_arm64_hash = "sha256-BxyJ9NNdMck3qk8wzCd07x/W9QlTMemHi3l0TIQ04ZY=";
   # ./update.sh llonebot 4.4.1
-  llonebot_version = "5.0.0";
-  llonebot_url = "https://github.com/LLOneBot/LLOneBot/releases/download/v5.0.0/LLOneBot.zip";
-  llonebot_hash = "sha256-xB2NQM6H3nlCEOLKvd1M6RfPhcKeXmHa9eVKzAzduBw=";
+  llonebot_version = "5.0.1";
+  llonebot_url = "https://github.com/LLOneBot/LLOneBot/releases/download/v5.0.1/LLOneBot.zip";
+  llonebot_hash = "sha256-wLcqcZ91anZG1zSFgr1PMrVp1AbIqXyaiBcQ9O0Us1k=";
 } 
