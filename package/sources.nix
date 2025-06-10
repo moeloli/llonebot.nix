@@ -3,11 +3,11 @@
   # Last updated: 2025-06-10.
 
   # ./update.sh pmhq 2.0.0
-  pmhq_version = "2.0.0";
-  pmhq_amd64_url = "https://github.com/linyuchen/PMHQ/releases/download/v2.0.0/pmhq-linux-x64.zip";
-  pmhq_amd64_hash = "sha256-K16ePRKXSJq3OO9no/Wcg390nKhZ47N/CXVjO4UN4Vk=";
-  pmhq_arm64_url = "https://github.com/linyuchen/PMHQ/releases/download/v2.0.0/pmhq-linux-arm64.zip";
-  pmhq_arm64_hash = "sha256-H+WqkEe0w5tROzDGJN1IzLCkfSfNqktj1cw5lc+XIcQ=";
+  pmhq_version = "2.0.1";
+  pmhq_amd64_url = "https://github.com/linyuchen/PMHQ/releases/download/v2.0.1/pmhq-linux-x64.zip";
+  pmhq_amd64_hash = "sha256-JNbV4nvVNDMLMEd/VrKctvAqpxu53PMIprIxEE2Ghb4=";
+  pmhq_arm64_url = "https://github.com/linyuchen/PMHQ/releases/download/v2.0.1/pmhq-linux-arm64.zip";
+  pmhq_arm64_hash = "sha256-GBHnfgVFhjXRD7CYtteuQF4HwZA2lAEFRc4rQlmjFbA=";
   # ./update.sh qq 3.2.13_241121
   qq_version = "3.2.17_250429";
   qq_amd64_url = "https://dldir1.qq.com/qqfile/qq/QQNT/Linux/QQ_3.2.17_250429_amd64_01.deb";
