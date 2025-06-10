@@ -60,6 +60,10 @@ let
     ln -s ${fonts} /etc/fonts/fonts.conf
     ln -s $(which env) /usr/bin/env
     ln -s $(which sh) /bin/sh
+
+    # llonebot 工作目录
+    mkdir -p /root/llonebot
+    cp -rf ${llonebot}/js/* /root/llonebot/
   '';
 
   # 配置 DBUS
@@ -94,7 +98,7 @@ let
     # 通知守护进程
     createService dunst 'dunst'
     createService pmhq "${pmhq}/bin/pmhq"
-    createService llonebot "${llonebot}/bin/llonebot"
+    createService llonebot "cd /root/llonebot && node llonebot.js --pmhq-host=127.0.0.1 --pmhq-port=13000"
   '';
 
 in

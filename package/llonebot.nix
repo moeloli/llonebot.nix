@@ -19,10 +19,8 @@ pkgs.stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    mkdir -p $out/bin
+    mkdir -p $out
     mv js $out/js
-    echo "node $out/js/llonebot.js --pmhq-host=127.0.0.1 --pmhq-port=13000" > $out/bin/llonebot
-    chmod +x $out/bin/llonebot
   '';
 
   meta = with lib; {
