@@ -7,7 +7,7 @@ let
   };
 in
 pkgs.stdenv.mkDerivation rec {
-  pname = "llonebot";
+  pname = "llonebot-js";
   version = "${sources.llonebot_version}";
   buildInputs = [
     pkgs.unzip

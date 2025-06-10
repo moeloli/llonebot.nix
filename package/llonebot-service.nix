@@ -11,7 +11,7 @@
 let
   cfg = config;
   pmhq = pkgs.callPackage ./pmhq.nix { inherit pkgs lib; };
-  llonebot = pkgs.callPackage ./llonebot.nix { inherit pkgs lib; };
+  llonebot-js = pkgs.callPackage ./llonebot-js.nix { inherit pkgs lib; };
   fonts = pkgs.makeFontsConf {
     fontDirectories = with pkgs; [ source-han-sans ];
   };
@@ -63,7 +63,7 @@ let
 
     # llonebot 工作目录
     mkdir -p /root/llonebot
-    cp -rf ${llonebot}/js/* /root/llonebot/
+    cp -rf ${llonebot-js}/js/* /root/llonebot/
   '';
 
   # 配置 DBUS
