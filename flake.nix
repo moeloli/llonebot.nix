@@ -45,7 +45,6 @@
           sandbox =
             (pkgs.callPackage ./package/sandbox.nix {
               config = defaultConfig;
-              inherit llonebot-service;
             }).sandbox;
 
           # 添加 Docker 镜像构建
