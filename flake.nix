@@ -27,6 +27,8 @@
 
         lib.buildLLOneBot = config: pkgs.callPackage ./package/default.nix { inherit config; };
 
+        lib.buildLLOneBotSandbox = config: pkgs.callPackage ./package/sandbox.nix { inherit config; };
+
         llonebot-service =
           (pkgs.callPackage ./package/llonebot-service.nix {
             config = defaultConfig;
