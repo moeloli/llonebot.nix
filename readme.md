@@ -51,14 +51,23 @@ docker run -d \
 ## 快速体验
 
 ```bash
-# 使用nix run
+# 沙盒运行
+nix run github:LLOneBot/llonebot.nix#sandbox
+
+# 直接在桌面运行（需要桌面环境）
 nix run github:LLOneBot/llonebot.nix
+
+# 仅运行 pmhq
+nix run github:LLOneBot/llonebot.nix#pmhq
 ```
 
-## Nix
+## NixOS 配置
 
-此方法需要安装桌面环境，使用命令 `llonebot` 启动
-[example.nix](./example.nix)
+无需桌面环境
+[sandbox](./examples/sandbox.nix)
+
+需要桌面环境版
+[desktop](./examples/sandbox.nix)
 
 ## 登录
 
