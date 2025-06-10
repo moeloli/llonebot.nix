@@ -7,10 +7,45 @@
 
 ## docker
 
+### docker compose
+
+```yaml
+version: "3"
+services:
+    llonebot:
+        environment:
+            - VNC_PASSWD=yourpassword # 设置 VNC 密码
+        volumes:
+            - ./QQ:/root/.config/QQ # 挂载 QQ 配置目录
+            - ./llonebot:/root/llonebot # 挂载 llonebot 数据目录
+        ports:
+            - 3000:3000 # OneBot HTTP 端口
+            - 3001:3001 # OneBot WebSocket 端口
+            - 5600:5600 # Satori 端口
+            - 5900:5600 # novnc
+            - 7081:7081 # vnc
+            - 13000:13000 # pmhq
+        container_name: llonebot
+        network_mode: bridge
+        restart: always
+        image: initialencounter/llonebot:latest
+```
+
+### docker cli
+
 ```bash
-# VNC 端口 7081
-# OneBot HTTP 端口 3000
-docker run -p 3000:3000 -p 7081:7081 -e VNC_PASSWD=vncpassword initialencounter/llonebot:latest
+docker run -d \
+  --name llonebot \
+  -p 3000:3000 \
+  -p 3001:3001 \
+  -p 5600:5600 \
+  -p 7081:7081 \
+  -p 5900:5900 \
+  -e VNC_PASSWD=yourpassword \
+  -v ./QQ:/root/.config/QQ \
+  -v ./llonebot:/root/llonebot \
+  --restart unless-stopped \
+  initialencounter/llonebot:latest
 ```
 
 ## 快速体验
