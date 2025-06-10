@@ -76,7 +76,7 @@
               --proc /proc \
               --dev /dev \
               --tmpfs /tmp \
-              ${(lib.buildLLOneBot defaultConfig).script}/bin/env
+              ${(lib.buildLLOneBot defaultConfig).script}/bin/llonebot-env
           '';
 
           # 添加 Docker 镜像构建
@@ -92,7 +92,7 @@
               ];
             };
             config = {
-              Cmd = [ "/bin/LLOneBot" ]; # 根据实际可执行文件路径调整
+              Cmd = [ "/bin/llonebot-env" ]; # 根据实际可执行文件路径调整
               Expose = [
                 "3000"
                 "3001"
