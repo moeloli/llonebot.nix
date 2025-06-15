@@ -1,21 +1,63 @@
-name: build and push docker image
+name: Auto build docker
 
 on:
+  schedule:
+    - cron:  '0 12 * * *'
   workflow_dispatch:
-    inputs:
-      tag:
-        description: '请填写发布Releases的版本号（留空不发布）'
-        required: true
 
-env:
-  TAG: "${{ github.event.inputs.tag }}"
+permissions:
+  contents: write
 
 jobs:
+  update:
+    runs-on: ubuntu-latest
+    outputs:
+      BUILD: ${{ steps.set_build.outputs.BUILD }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cachix/install-nix-action@v31
+    - name: Get latest version
+      run: |
+        echo "LATEST_LLONEBOT_VERSION=$(echo "$(curl "https://api.github.com/repos/LLOneBot/LLOneBot/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
+        echo "LATEST_PMHQ_VERSION=$(echo "$(curl "https://api.github.com/repos/linyuchen/PMHQ/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
+    - name: Get local version
+      run: |
+        echo "LOCAL_LLONEBOT_VERSION=$(grep "llonebot_version = " package/sources.nix | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")" >> $GITHUB_ENV
+        echo "LOCAL_PMHQ_VERSION=$(grep "pmhq_version = " package/sources.nix | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")" >> $GITHUB_ENV
+    - name: update llonebot
+      if: env.LOCAL_LLONEBOT_VERSION != env.LATEST_LLONEBOT_VERSION
+      run: |
+        ./update.sh llonebot ${{ env.LATEST_LLONEBOT_VERSION }}
+        git config --local user.email "2911583893@qq.com"
+        git config --local user.name "initialencounter"
+        git add .
+        git commit -m "llonebot ${{ env.LOCAL_LLONEBOT_VERSION }} -> ${{ env.LATEST_LLONEBOT_VERSION }}"
+        git push
+    - name: update pmhq
+      if: env.LOCAL_PMHQ_VERSION != env.LATEST_PMHQ_VERSION
+      run: |
+        ./update.sh pmhq ${{ env.LATEST_PMHQ_VERSION }}
+        git config --local user.email "2911583893@qq.com"
+        git config --local user.name "initialencounter"
+        git add .
+        git commit -m "pmhq ${{ env.LOCAL_PMHQ_VERSION }} -> ${{ env.LATEST_PMHQ_VERSION }}"
+        git push
+    - name: set build output
+      id: set_build
+      run: |
+        if [[ "$LOCAL_LLONEBOT_VERSION" != "$LATEST_LLONEBOT_VERSION" ]] || [[ "$LOCAL_PMHQ_VERSION" != "$LATEST_PMHQ_VERSION" ]]; then
+          echo "BUILD=true" >> $GITHUB_OUTPUT
+        else
+          echo "BUILD=false" >> $GITHUB_OUTPUT
+        fi
+
   build:
+    needs: update
+    if: needs.update.outputs.BUILD == 'true'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: cachix/install-nix-action@v20
+    - uses: cachix/install-nix-action@v31
     - uses: DeterminateSystems/flakehub-cache-action@main
     - name: build
       run: nix build .
@@ -30,7 +72,8 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Push Docker Image
       run: |
+        TAG="v$(grep "llonebot_version = " package/sources.nix | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")"
         docker tag llonebot:latest initialencounter/llonebot:latest
-        docker tag llonebot:latest initialencounter/llonebot:${{ env.TAG }}
+        docker tag llonebot:latest initialencounter/llonebot:${TAG}
         docker push initialencounter/llonebot:latest
-        docker push initialencounter/llonebot:${{ env.TAG }}
+        docker push initialencounter/llonebot:${TAG}
