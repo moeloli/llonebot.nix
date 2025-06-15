@@ -28,8 +28,8 @@ jobs:
       if: env.LOCAL_LLONEBOT_VERSION != env.LATEST_LLONEBOT_VERSION
       run: |
         ./update.sh llonebot ${{ env.LATEST_LLONEBOT_VERSION }}
-        git config --local user.email "2911583893@qq.com"
-        git config --local user.name "initialencounter"
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
         git add .
         git commit -m "llonebot ${{ env.LOCAL_LLONEBOT_VERSION }} -> ${{ env.LATEST_LLONEBOT_VERSION }}"
         git push
@@ -37,8 +37,8 @@ jobs:
       if: env.LOCAL_PMHQ_VERSION != env.LATEST_PMHQ_VERSION
       run: |
         ./update.sh pmhq ${{ env.LATEST_PMHQ_VERSION }}
-        git config --local user.email "2911583893@qq.com"
-        git config --local user.name "initialencounter"
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
         git add .
         git commit -m "pmhq ${{ env.LOCAL_PMHQ_VERSION }} -> ${{ env.LATEST_PMHQ_VERSION }}"
         git push
