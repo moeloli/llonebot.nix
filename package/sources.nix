@@ -17,5 +17,5 @@
   # ./update.sh llonebot 4.4.1
   llonebot_version = "5.1.0";
   llonebot_url = "https://github.com/LLOneBot/LLOneBot/releases/download/v5.1.0/LLOneBot.zip";
-  llonebot_hash = "sha256-9mgywMD4pomTAtBfreeSAXYBQSgmZba5PZIz5aGwuK8=";
+  llonebot_hash = "sha256-6ZnmQwS3zS93rfyqH9K1NhvqcsvKbDGHtwem/obesWs=";
 } 
