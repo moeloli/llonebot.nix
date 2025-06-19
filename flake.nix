@@ -63,6 +63,10 @@
             };
             config = {
               Cmd = [ "/bin/llonebot-service" ]; # 根据实际可执行文件路径调整
+              Env = [
+                "TZDIR=${pkgs.tzdata}/share/zoneinfo"
+                "TZ=Asia/Shanghai"
+              ];
               Expose = [
                 "3000"
                 "3001"
