@@ -18,6 +18,9 @@ jobs:
     - uses: cachix/install-nix-action@v31
     - name: Get latest version
       run: |
+        echo "BUILD=false" >> $GITHUB_OUTPUT
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
         echo "LATEST_LLONEBOT_VERSION=$(echo "$(curl "https://api.github.com/repos/LLOneBot/LLOneBot/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
         echo "LATEST_PMHQ_VERSION=$(echo "$(curl "https://api.github.com/repos/linyuchen/PMHQ/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
     - name: Get local version
@@ -28,8 +31,6 @@ jobs:
       if: env.LOCAL_LLONEBOT_VERSION != env.LATEST_LLONEBOT_VERSION
       run: |
         ./update.sh llonebot ${{ env.LATEST_LLONEBOT_VERSION }}
-        git config --local user.email "actions@github.com"
-        git config --local user.name "GitHub Actions"
         git add .
         git commit -m "llonebot ${{ env.LOCAL_LLONEBOT_VERSION }} -> ${{ env.LATEST_LLONEBOT_VERSION }}"
         git push
@@ -38,8 +39,6 @@ jobs:
       if: env.LOCAL_PMHQ_VERSION != env.LATEST_PMHQ_VERSION
       run: |
         ./update.sh pmhq ${{ env.LATEST_PMHQ_VERSION }}
-        git config --local user.email "actions@github.com"
-        git config --local user.name "GitHub Actions"
         git add .
         git commit -m "pmhq ${{ env.LOCAL_PMHQ_VERSION }} -> ${{ env.LATEST_PMHQ_VERSION }}"
         git push
