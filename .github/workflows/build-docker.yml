@@ -33,6 +33,7 @@ jobs:
         git add .
         git commit -m "llonebot ${{ env.LOCAL_LLONEBOT_VERSION }} -> ${{ env.LATEST_LLONEBOT_VERSION }}"
         git push
+        echo "BUILD=true" >> $GITHUB_OUTPUT
     - name: update pmhq
       if: env.LOCAL_PMHQ_VERSION != env.LATEST_PMHQ_VERSION
       run: |
@@ -42,14 +43,7 @@ jobs:
         git add .
         git commit -m "pmhq ${{ env.LOCAL_PMHQ_VERSION }} -> ${{ env.LATEST_PMHQ_VERSION }}"
         git push
-    - name: set build output
-      id: set_build
-      run: |
-        if [[ "$LOCAL_LLONEBOT_VERSION" != "$LATEST_LLONEBOT_VERSION" ]] || [[ "$LOCAL_PMHQ_VERSION" != "$LATEST_PMHQ_VERSION" ]]; then
-          echo "BUILD=true" >> $GITHUB_OUTPUT
-        else
-          echo "BUILD=false" >> $GITHUB_OUTPUT
-        fi
+        echo "BUILD=true" >> $GITHUB_OUTPUT
 
   build:
     needs: update
