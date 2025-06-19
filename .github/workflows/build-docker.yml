@@ -23,6 +23,11 @@ jobs:
         git config --local user.name "GitHub Actions"
         echo "LATEST_LLONEBOT_VERSION=$(echo "$(curl "https://api.github.com/repos/LLOneBot/LLOneBot/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
         echo "LATEST_PMHQ_VERSION=$(echo "$(curl "https://api.github.com/repos/linyuchen/PMHQ/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
+    - name: Get old hash
+      run: |
+        echo "old_pmhq_amd64_hash=$(grep "pmhq_amd64_hash = " package/sources.nix | grep -oE "sha256-[^\"]*")" >> $GITHUB_ENV
+        echo "old_pmhq_arm64_hash=$(grep "pmhq_arm64_hash = " package/sources.nix | grep -oE "sha256-[^\"]*")" >> $GITHUB_ENV
+        echo "old_llonebot_hash=$(grep "llonebot_hash = " package/sources.nix | grep -oE "sha256-[^\"]*")" >> $GITHUB_ENV
     - name: Get local version
       run: |
         echo "LOCAL_LLONEBOT_VERSION=$(grep "llonebot_version = " package/sources.nix | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")" >> $GITHUB_ENV
@@ -33,7 +38,6 @@ jobs:
         ./update.sh llonebot ${{ env.LATEST_LLONEBOT_VERSION }}
         git add .
         git commit -m "llonebot ${{ env.LOCAL_LLONEBOT_VERSION }} -> ${{ env.LATEST_LLONEBOT_VERSION }}"
-        git push
         echo "BUILD=true" >> $GITHUB_OUTPUT
     - name: update pmhq
       if: env.LOCAL_PMHQ_VERSION != env.LATEST_PMHQ_VERSION
@@ -41,8 +45,27 @@ jobs:
         ./update.sh pmhq ${{ env.LATEST_PMHQ_VERSION }}
         git add .
         git commit -m "pmhq ${{ env.LOCAL_PMHQ_VERSION }} -> ${{ env.LATEST_PMHQ_VERSION }}"
-        git push
         echo "BUILD=true" >> $GITHUB_OUTPUT
+    - name: update hash
+      run: |
+        ./update.sh pmhq ${{ env.LATEST_PMHQ_VERSION }}
+        new_pmhq_amd64_hash=$(grep "pmhq_amd64_hash = " package/sources.nix | grep -oE "sha256-[^\"]*")
+        new_pmhq_arm64_hash=$(grep "pmhq_arm64_hash = " package/sources.nix | grep -oE "sha256-[^\"]*")
+        if [[ "$old_pmhq_amd64_hash" != "$new_pmhq_amd64_hash" ]] || [[ "$old_pmhq_arm64_hash" != "$new_pmhq_arm64_hash" ]]; then
+          git add .
+          git commit -m "fix: pmhq_hash"
+          echo "BUILD=true" >> $GITHUB_OUTPUT
+        fi
+
+        ./update.sh llonebot ${{ env.LATEST_LLONEBOT_VERSION }}
+        new_llonebot_hash=$(grep "llonebot_hash = " package/sources.nix | grep -oE "sha256-[^\"]*")
+        if [[ "$old_llonebot_hash" != "$new_llonebot_hash" ]]; then
+          git add .
+          git commit -m "fix: llonebot_hash"
+          echo "BUILD=true" >> $GITHUB_OUTPUT
+        fi
+    - name: git push
+      run: git push
 
   build:
     needs: update
