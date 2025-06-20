@@ -1,4 +1,9 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 let
   qq = pkgs.callPackage ./qq/package.nix {
     libgbm = pkgs.mesa.drivers; # 显式传递 libgbm

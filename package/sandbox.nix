@@ -13,7 +13,7 @@ in
 rec {
   sandbox = pkgs.writeScriptBin "sandbox" ''
     #!${pkgs.runtimeShell}
-    mkdir -p /tmp ./data
+    ${pkgs.busybox}/bin/mkdir -p data
     if [ -z "$VNC_PASSWD" ]; then
       VNC_PASSWD=${config.vncpassword}
     fi
