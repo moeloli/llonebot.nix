@@ -28,3 +28,8 @@ if [ "$package" = "llonebot" ]; then
     sed -i "s|llonebot_url = \".*\";|llonebot_url = \"$url\";|g" ./package/sources.nix
     sed -i "s|llonebot_hash = \".*\";|llonebot_hash = \"$hash\";|g" ./package/sources.nix
 fi
+
+# example: ./update.sh qq https://dldir1v6.qq.com/qqfile/qq/QQNT/9afaaf9b/linuxqq_3.2.18-35951_amd64.deb
+if [ "$package" = "qq" ]; then
+    cd package/qq && ./update.sh $version
+fi
