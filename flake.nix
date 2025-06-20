@@ -1,5 +1,9 @@
 {
   description = "llonebot.nix";
+  # libstdc++.so.6: version `GLIBCXX_3.4.32' not found
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+  };
   outputs =
     {
       self,

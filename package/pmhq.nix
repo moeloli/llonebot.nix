@@ -25,7 +25,7 @@ let
       at-spi2-core
       autoPatchelfHook
       makeShellWrapper
-      wrapGAppsHook3
+      wrapGAppsHook4
       ;
     commandLineArgs = ""; # 可选参数
   };

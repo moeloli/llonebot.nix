@@ -24,7 +24,7 @@
   at-spi2-core,
   autoPatchelfHook,
   makeShellWrapper,
-  wrapGAppsHook3,
+  wrapGAppsHook4,
   commandLineArgs ? "",
 }:
 
@@ -51,7 +51,7 @@ stdenv.mkDerivation {
   nativeBuildInputs = [
     autoPatchelfHook
     makeShellWrapper
-    wrapGAppsHook3
+    wrapGAppsHook4
     dpkg
   ];
 
