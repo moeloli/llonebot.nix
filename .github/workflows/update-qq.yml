@@ -1,0 +1,108 @@
+name: Update QQ
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Linux QQ 下载 URL'
+        required: true
+        type: string
+      build:
+        description: '更新后是否构建 Docker'
+        default: true
+        type: boolean
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  DOCKER_REPO: initialencounter/llonebot
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+          fetch-depth: 0
+
+    - name: Install Nix
+      uses: cachix/install-nix-action@v31
+
+    - name: Update QQ 
+      run: |
+        set -euo pipefail
+        
+        if [ ! -f "./update.sh" ]; then
+          echo "Error: update.sh not found!"
+          exit 1
+        fi
+
+        chmod +x ./update.sh
+
+        sources_file="package/qq/sources.nix"
+        old_version=$(grep -m1 'version = "' "$sources_file" | cut -d'"' -f2)
+        old_hash=$(grep -m1 'amd64_hash = "' "$sources_file" | cut -d'"' -f2)
+
+        ./update.sh qq "${{ github.event.inputs.url }}"
+
+        new_version=$(grep -m1 'version = "' "$sources_file" | cut -d'"' -f2)
+        new_hash=$(grep -m1 'amd64_hash = "' "$sources_file" | cut -d'"' -f2)
+
+        if [[ "${old_hash}" != "${new_hash}" ]]; then
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+
+          git add "$sources_file"
+
+          if [[ "${old_version}" == "${new_version}" ]]; then
+            commit_msg="fix(qq): update package hash"
+          else
+            commit_msg="qq ${old_version} -> ${new_version}"
+          fi
+
+          git commit -m "$commit_msg"
+          git push origin HEAD:main
+        else
+          echo "ℹ️ No changes detected, skipping commit"
+        fi
+
+  build:
+    needs: update
+    if: ${{ github.event.inputs.build }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: ${{ github.ref }}
+    - uses: cachix/install-nix-action@v31
+    - uses: DeterminateSystems/flakehub-cache-action@main
+    - name: Build Docker Image
+      run: |
+        git pull origin main
+        nix build .#dockerImage
+    - name: Load Docker Image
+      run: docker load < result
+    - name: Login Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Push Docker Image
+      run: |
+        VERSION=$(grep "llonebot_version = " package/sources.nix | cut -d'"' -f2)
+        if [ -z "$VERSION" ]; then
+          echo "Failed to extract version"
+          exit 1
+        fi
+        TAG="v$VERSION"
+        echo "Using tag: $TAG"
+
+        IMAGE_ID=$(docker images --format '{{.ID}}' llonebot:latest)
+
+        docker tag $IMAGE_ID ${{ env.DOCKER_REPO }}:latest
+        docker tag $IMAGE_ID ${{ env.DOCKER_REPO }}:$TAG
+        docker push ${{ env.DOCKER_REPO }}:latest
+        docker push ${{ env.DOCKER_REPO }}:$TAG
