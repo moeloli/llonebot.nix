@@ -22,7 +22,7 @@ services:
             - 3000:3000 # OneBot HTTP 端口
             - 3001:3001 # OneBot WebSocket 端口
             - 5600:5600 # Satori 端口
-            - 5900:5600 # novnc
+            - 5900:5900 # novnc
             - 7081:7081 # vnc
             - 13000:13000 # pmhq
         container_name: llonebot
