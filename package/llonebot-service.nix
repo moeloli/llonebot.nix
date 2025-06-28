@@ -33,6 +33,7 @@ let
           x11vnc
           dbus
           dunst
+          ffmpeg
         ]
       )
     }
@@ -72,6 +73,7 @@ let
     # llonebot 工作目录
     mkdir -p /root/llonebot
     cp -rf ${llonebot-js}/js/* /root/llonebot/
+    sed -i "s|\"ffmpeg\":\s*\"\"|\"ffmpeg\": \"${pkgs.ffmpeg}/bin/ffmpeg\"|g" "/root/llonebot/default_config.json"
   '';
 
   # 配置 DBUS
