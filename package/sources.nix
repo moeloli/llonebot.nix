@@ -8,12 +8,6 @@
   pmhq_amd64_hash = "sha256-LszocLPaC6Ql+q9YpcbEXg2NLaVC3V8vjoiEtmgPFSY=";
   pmhq_arm64_url = "https://github.com/linyuchen/PMHQ/releases/download/v2.0.3/pmhq-linux-arm64.zip";
   pmhq_arm64_hash = "sha256-ZBJsYBIacKd6q//Vj0NoThZymJWKqSt06fBp+Q1lcys=";
-  # ./update.sh qq 3.2.13_241121
-  qq_version = "3.2.17_250429";
-  qq_amd64_url = "https://dldir1.qq.com/qqfile/qq/QQNT/Linux/QQ_3.2.17_250429_amd64_01.deb";
-  qq_amd64_hash = "sha256-DDqLHl8Ig7miZTheRltBq+riLXyGGnW8NtcOI0PgKtc=";
-  qq_arm64_url = "https://dldir1.qq.com/qqfile/qq/QQNT/Linux/QQ_3.2.17_250429_arm64_01.deb";
-  qq_arm64_hash = "sha256-BxyJ9NNdMck3qk8wzCd07x/W9QlTMemHi3l0TIQ04ZY=";
   # ./update.sh llonebot 4.4.1
   llonebot_version = "5.2.2";
   llonebot_url = "https://github.com/LLOneBot/LLOneBot/releases/download/v5.2.2/LLOneBot.zip";
