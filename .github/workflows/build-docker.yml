@@ -90,32 +90,94 @@ jobs:
       with:
         fetch-depth: 0
         ref: ${{ github.ref }}
+        
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: arm64
+
+    - name: Configure binfmt for qemu
+      run: |
+        docker run --privileged --rm tonistiigi/binfmt --install arm64
+
     - uses: cachix/install-nix-action@v31
+      with:
+        extra_nix_config: |
+          extra-platforms = aarch64-linux
+          system-features = kvm
+          experimental-features = nix-command flakes
+          
     - uses: DeterminateSystems/flakehub-cache-action@main
-    - name: Build Docker Image
+
+    - name: Setup cross-compilation for aarch64
+      run: |
+        # 确保Nix可以访问QEMU
+        sudo mkdir -p /etc/nix
+        echo 'sandbox = false' | sudo tee -a /etc/nix/nix.conf
+        # 添加必要的构建支持
+        sudo apt-get update
+        sudo apt-get install -y qemu-user-static binfmt-support
+        # 确认 binfmt 支持已正确配置
+        ls -la /proc/sys/fs/binfmt_misc/
+
+    - name: Extract version information
+      id: version
       run: |
         git pull origin main
-        nix build .#dockerImage
-    - name: Load Docker Image
-      run: docker load < result
+        echo "LLONEBOT_VERSION=$(grep "llonebot_version = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
+
+    - name: Build Docker Image AMD64
+      run: |
+        nix build --option system x86_64-linux --show-trace .#dockerImage -o docker-image-amd64
+        
+    - name: Build Docker Image ARM64
+      run: |
+        nix build --option system aarch64-linux --show-trace .#dockerImage -o docker-image-aarch64
+
+    - name: Load Docker Images
+      run: |
+        docker load < docker-image-amd64
+        docker tag llonebot:latest ${{ env.DOCKER_REPO }}:latest-amd64
+        
+        docker load < docker-image-aarch64
+        docker tag llonebot:latest ${{ env.DOCKER_REPO }}:latest-arm64
+        
     - name: Login Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
     - name: Push Docker Image
       run: |
-        VERSION=$(grep "llonebot_version = " package/sources.nix | cut -d'"' -f2)
-        if [ -z "$VERSION" ]; then
-          echo "Failed to extract version"
+        # 检查版本号是否设置
+        if [ -z "${{ env.LLONEBOT_VERSION}}" ]; then
+          echo "::error::LLONEBOT_VERSION is not set"
           exit 1
         fi
-        TAG="v$VERSION"
+        
+        TAG="v${{ env.LLONEBOT_VERSION}}"
         echo "Using tag: $TAG"
 
-        IMAGE_ID=$(docker images --format '{{.ID}}' llonebot:latest)
+        # 推送架构特定的镜像
+        docker push ${{ env.DOCKER_REPO }}:latest-amd64
+        docker push ${{ env.DOCKER_REPO }}:latest-arm64
 
-        docker tag $IMAGE_ID ${{ env.DOCKER_REPO }}:latest
-        docker tag $IMAGE_ID ${{ env.DOCKER_REPO }}:$TAG
-        docker push ${{ env.DOCKER_REPO }}:latest
-        docker push ${{ env.DOCKER_REPO }}:$TAG
+        # 创建并推送多架构manifest
+        docker manifest create ${{ env.DOCKER_REPO }}:latest \
+          --amend ${{ env.DOCKER_REPO }}:latest-amd64 \
+          --amend ${{ env.DOCKER_REPO }}:latest-arm64
+        
+        docker manifest create ${{ env.DOCKER_REPO }}:$TAG \
+          --amend ${{ env.DOCKER_REPO }}:latest-amd64 \
+          --amend ${{ env.DOCKER_REPO }}:latest-arm64
+
+        # 为manifest明确指定架构
+        docker manifest annotate ${{ env.DOCKER_REPO }}:latest ${{ env.DOCKER_REPO }}:latest-amd64 --os linux --arch amd64
+        docker manifest annotate ${{ env.DOCKER_REPO }}:latest ${{ env.DOCKER_REPO }}:latest-arm64 --os linux --arch arm64
+        docker manifest annotate ${{ env.DOCKER_REPO }}:$TAG ${{ env.DOCKER_REPO }}:latest-amd64 --os linux --arch amd64
+        docker manifest annotate ${{ env.DOCKER_REPO }}:$TAG ${{ env.DOCKER_REPO }}:latest-arm64 --os linux --arch arm64
+
+        # 推送manifest
+        docker manifest push ${{ env.DOCKER_REPO }}:latest
+        docker manifest push ${{ env.DOCKER_REPO }}:$TAG
