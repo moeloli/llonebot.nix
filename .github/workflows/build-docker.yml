@@ -125,6 +125,8 @@ jobs:
       run: |
         git pull origin main
         echo "LLONEBOT_VERSION=$(grep "llonebot_version = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
+        echo "PMHQ_VERSION=$(grep "pmhq_version = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
+        echo "QQ_VERSION=$(grep "qq_version = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
 
     - name: Build Docker Image AMD64
       run: |
@@ -156,7 +158,7 @@ jobs:
           exit 1
         fi
         
-        TAG="v${{ env.LLONEBOT_VERSION}}"
+        TAG="v${{ env.LLONEBOT_VERSION }}-${{ env.PMHQ_VERSION }}-${{ env.QQ_VERSION }}"
         echo "Using tag: $TAG"
 
         # 推送架构特定的镜像
