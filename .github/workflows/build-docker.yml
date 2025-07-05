@@ -1,8 +1,8 @@
 name: Auto build docker
 
 on:
-  # schedule:
-  #   - cron:  '0 12 * * *'
+  schedule:
+    - cron:  '0 12 * * *'
   workflow_dispatch:
 
 permissions:
@@ -15,51 +15,68 @@ jobs:
   update:
     runs-on: ubuntu-latest
     outputs:
-      BUILD: ${{ steps.set_build.outputs.BUILD }}
+      BUILD: ${{ steps.check_event.outputs.BUILD }}
     steps:
-    - uses: actions/checkout@v4
+    - name: Check event type
+      id: check_event
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          echo "EVENT_TYPE=manual" >> $GITHUB_ENV
+          echo "BUILD=true" >> $GITHUB_OUTPUT
+          exit 0
+        else
+          echo "EVENT_TYPE=scheduled" >> $GITHUB_ENV
+          echo "BUILD=false" >> $GITHUB_OUTPUT
+        fi
+
+    - if: env.EVENT_TYPE == 'scheduled'
+      uses: actions/checkout@v4
       with:
           fetch-depth: 0
 
-    - name: Install Nix
+    - if: env.EVENT_TYPE == 'scheduled'
+      name: Install Nix
       uses: cachix/install-nix-action@v31
 
-    - name: Get latest version
+    - if: env.EVENT_TYPE == 'scheduled'
+      name: Get latest version
       run: |
-        echo "BUILD=false" >> $GITHUB_OUTPUT
         git config --local user.email "actions@github.com"
         git config --local user.name "GitHub Actions"
         echo "LATEST_LLONEBOT_VERSION=$(echo "$(curl "https://api.github.com/repos/LLOneBot/LLOneBot/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
         echo "LATEST_PMHQ_VERSION=$(echo "$(curl "https://api.github.com/repos/linyuchen/PMHQ/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
 
-    - name: Get local version
+    - if: env.EVENT_TYPE == 'scheduled'
+      name: Get local version
       run: |
         echo "LOCAL_LLONEBOT_VERSION=$(grep "llonebot_version = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
         echo "LOCAL_PMHQ_VERSION=$(grep "pmhq_version = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
 
-    - name: update llonebot
-      if: env.LOCAL_LLONEBOT_VERSION != env.LATEST_LLONEBOT_VERSION
+    - if: env.EVENT_TYPE == 'scheduled' && env.LOCAL_LLONEBOT_VERSION != env.LATEST_LLONEBOT_VERSION
+      name: update llonebot
       run: |
         ./update.sh llonebot ${{ env.LATEST_LLONEBOT_VERSION }}
         git add .
         git commit -m "llonebot ${{ env.LOCAL_LLONEBOT_VERSION }} -> ${{ env.LATEST_LLONEBOT_VERSION }}"
         echo "BUILD=true" >> $GITHUB_OUTPUT
 
-    - name: update pmhq
-      if: env.LOCAL_PMHQ_VERSION != env.LATEST_PMHQ_VERSION
+    - if: env.EVENT_TYPE == 'scheduled' && env.LOCAL_PMHQ_VERSION != env.LATEST_PMHQ_VERSION
+      name: update pmhq
       run: |
         ./update.sh pmhq ${{ env.LATEST_PMHQ_VERSION }}
         git add .
         git commit -m "pmhq ${{ env.LOCAL_PMHQ_VERSION }} -> ${{ env.LATEST_PMHQ_VERSION }}"
         echo "BUILD=true" >> $GITHUB_OUTPUT
 
-    - name: Get old hash
+    - if: env.EVENT_TYPE == 'scheduled'
+      name: Get old hash
       run: |
         echo "old_pmhq_amd64_hash=$(grep "pmhq_amd64_hash = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
         echo "old_pmhq_arm64_hash=$(grep "pmhq_arm64_hash = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
         echo "old_llonebot_hash=$(grep "llonebot_hash = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
 
-    - name: update hash
+    - if: env.EVENT_TYPE == 'scheduled'
+      name: update hash
       run: |
         ./update.sh pmhq ${{ env.LATEST_PMHQ_VERSION }}
         new_pmhq_amd64_hash=$(grep "pmhq_amd64_hash = " package/sources.nix | cut -d'"' -f2)
@@ -78,7 +95,8 @@ jobs:
           echo "BUILD=true" >> $GITHUB_OUTPUT
         fi
 
-    - name: git push
+    - if: env.EVENT_TYPE == 'scheduled'
+      name: git push
       run: git push
 
   build:
