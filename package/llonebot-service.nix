@@ -21,13 +21,17 @@ let
   fonts = pkgs.makeFontsConf {
     fontDirectories = with pkgs; [ source-han-sans ];
   };
+  nixpkgs24_05 = import (fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/nixos-24.05.tar.gz";
+    sha256 = "sha256:0zydsqiaz8qi4zd63zsb2gij2p614cgkcaisnk11wjy3nmiq0x1s";
+  }) { system = pkgs.system; };
   # 基础环境设置脚本
   setupEnvironment = ''
     export PATH=${
       lib.makeBinPath (
         with pkgs;
         [
-          nodejs
+          nixpkgs24_05.nodejs_22
           busybox
           xorg.xorgserver
           x11vnc
