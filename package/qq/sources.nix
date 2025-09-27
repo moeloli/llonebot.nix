@@ -14,14 +14,14 @@ in
   aarch64-darwin = any-darwin;
   x86_64-darwin = any-darwin;
   aarch64-linux = {
-    version = "";
+    version = "3.2.19-39038";
     src = fetchurl {
       url = "https://dldir1v6.qq.com/qqfile/qq/QQNT/c773cdf7/linuxqq_3.2.19-39038_arm64.deb";
       hash = "sha256-OqBRxDfTz9w4cFeDSKeysPlqxaJtrp96PZieXnsjGhA=";
     };
   };
   x86_64-linux = {
-    version = "";
+    version = "3.2.19-39038";
     src = fetchurl {
       url = "https://dldir1v6.qq.com/qqfile/qq/QQNT/c773cdf7/linuxqq_3.2.19-39038_amd64.deb";
       hash = "sha256-5M3kykJCmFZZ0VTG/K+nYRt7SIUzvc3O6yPW8ebx45A=";

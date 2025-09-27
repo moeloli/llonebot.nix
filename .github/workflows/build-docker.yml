@@ -148,7 +148,7 @@ jobs:
         git pull origin main
         echo "LLONEBOT_VERSION=$(grep "llonebot_version = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
         echo "PMHQ_VERSION=$(grep "pmhq_version = " package/sources.nix | cut -d'"' -f2)" >> $GITHUB_ENV
-        echo "QQ_VERSION=$(grep "version = " package/qq/sources.nix | cut -d'"' -f2 | grep -oP  '(?<!-)-\K.*')" >> $GITHUB_ENV
+        echo "QQ_VERSION=$(grep "version = " package/qq/sources.nix | cut -d'"' -f2 | grep -oP -m 1 '(?<!-)-\K.{5}')" >> $GITHUB_ENV
 
     - name: Build Docker Image AMD64
       run: |

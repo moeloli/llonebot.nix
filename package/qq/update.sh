@@ -1,10 +1,10 @@
 url=$1
 
 hash=$(echo "$url" | grep -oP '/QQNT/\K[^/]+')
-version=$(echo "$url" | grep -oP 'linuxqq_\K[^_]+')
+linux_version=$(echo "$url" | grep -oP 'linuxqq_\K[^_]+')
 
-linux_x86_64_url="https://dldir1v6.qq.com/qqfile/qq/QQNT/${hash}/linuxqq_${version}_amd64.deb"
-linux_aarch64_url="https://dldir1v6.qq.com/qqfile/qq/QQNT/${hash}/linuxqq_${version}_arm64.deb"
+linux_x86_64_url="https://dldir1v6.qq.com/qqfile/qq/QQNT/${hash}/linuxqq_${linux_version}_amd64.deb"
+linux_aarch64_url="https://dldir1v6.qq.com/qqfile/qq/QQNT/${hash}/linuxqq_${linux_version}_arm64.deb"
 
 linux_x86_64_hash=$(nix-prefetch-url $linux_x86_64_url)
 linux_aarch64_hash=$(nix-prefetch-url $linux_aarch64_url)
