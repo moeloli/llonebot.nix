@@ -11,6 +11,8 @@ rec {
     config = {
       host = config.pmhq_host;
       port = config.pmhq_port;
+      quick_login_qq = config.quick_login_qq;
+      headless = config.headless;
     };
   };
 

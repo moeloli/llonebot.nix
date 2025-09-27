@@ -36,6 +36,8 @@ let
   };
   sources = import ./sources.nix { };
 
+  boolToString = b: if b then "true" else "false";
+
   srcs = {
     x86_64-linux = pkgs.fetchurl {
       url = sources.pmhq_amd64_url;
@@ -76,7 +78,16 @@ pkgs.stdenv.mkDerivation rec {
     head -n -1 ${qq}/opt/QQ/qq-wrapper > $out/bin/pmhq
     echo "$out/bin/source-pmhq" >> $out/bin/pmhq
     chmod +x $out/bin/pmhq
-    echo "{\"qq_path\": \"${qq}/opt/QQ/qq\",\"servers\": [],\"default_host\": \"${config.host}\",\"default_port\": ${toString config.port}}" > $out/bin/pmhq_config.json
+    cat <<EOF > $out/bin/pmhq_config.json
+{
+  "qq_path": "${qq}/opt/QQ/qq",
+  "servers": [],
+  "default_host": "${config.host}",
+  "headless": ${boolToString config.headless},
+  "quick_login_qq": "${config.quick_login_qq}",
+  "default_port": ${toString config.port}
+}
+EOF
   '';
 
   meta = with lib; {

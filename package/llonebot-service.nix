@@ -15,6 +15,8 @@ let
     config = {
       host = config.pmhq_host;
       port = config.pmhq_port;
+      quick_login_qq = config.quick_login_qq;
+      headless = config.headless;
     };
   };
   llonebot-js = pkgs.callPackage ./llonebot-js.nix { inherit pkgs lib; };
@@ -98,16 +100,20 @@ let
 
     # 创建各个服务
     createService xvfb 'Xvfb ${toString cfg.display}'
-    createService x11vnc 'x11vnc ${
-      lib.concatStringsSep " " [
-        "-forever"
-        "-display ${toString cfg.display}"
-        "-rfbport ${toString cfg.vncport}"
-        "-passwd \"$ENV_VNC_PASSWD\""
-        "-shared"
-      ]
-    }'
-    createService novnc '${pkgs.novnc}/bin/novnc --listen ${toString cfg.novncport} --vnc 127.0.0.1:${toString cfg.vncport}'
+
+    if [ "${toString cfg.headless}" = "false" ]; then
+      createService x11vnc 'x11vnc ${
+        lib.concatStringsSep " " [
+          "-forever"
+          "-display ${toString cfg.display}"
+          "-rfbport ${toString cfg.vncport}"
+          "-passwd \"$ENV_VNC_PASSWD\""
+          "-shared"
+        ]
+      }'
+      createService novnc '${pkgs.novnc}/bin/novnc --listen ${toString cfg.novncport} --vnc 127.0.0.1:${toString cfg.vncport}'
+    fi
+
     createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
     # 通知守护进程
     createService dunst 'dunst'

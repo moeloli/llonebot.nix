@@ -23,6 +23,8 @@
           novncport = 5900;
           pmhq_host = "0.0.0.0";
           pmhq_port = 13000;
+          headless = true;
+          quick_login_qq = ""; # 快速登录QQ号
         };
 
       in
@@ -43,6 +45,8 @@
             config = {
               host = defaultConfig.pmhq_host;
               port = defaultConfig.pmhq_port;
+              quick_login_qq = defaultConfig.quick_login_qq;
+              headless = defaultConfig.headless;
             };
           };
 
@@ -76,7 +80,7 @@
                 "3001"
                 "5900"
                 "5600"
-                "7081"
+                "3080"
                 "13000"
               ]; # 曝露端口
             };
