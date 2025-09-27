@@ -11,13 +11,7 @@
 let
   cfg = config;
   pmhq = pkgs.callPackage ./pmhq.nix {
-    inherit pkgs lib;
-    config = {
-      host = config.pmhq_host;
-      port = config.pmhq_port;
-      quick_login_qq = config.quick_login_qq;
-      headless = config.headless;
-    };
+    inherit pkgs lib config;
   };
   llonebot-js = pkgs.callPackage ./llonebot-js.nix { inherit pkgs lib; };
   fonts = pkgs.makeFontsConf {
@@ -39,7 +33,8 @@ let
           dbus
           dunst
           ffmpeg
-        ] ++ lib.optionals (!cfg.headless) [
+        ]
+        ++ lib.optionals (!cfg.headless) [
           x11vnc
           novnc
         ]

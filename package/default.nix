@@ -1,35 +1,58 @@
 {
   pkgs,
-  lib,
-  config,
+  lib ? pkgs.lib,
   ...
 }:
-rec {
-  llonebot-js = pkgs.callPackage ./llonebot-js.nix { };
+let
+  # 导入配置管理模块
+  configLib = pkgs.callPackage ./config.nix { };
 
-  pmhq = pkgs.callPackage ./pmhq.nix {
-    config = {
-      host = config.pmhq_host;
-      port = config.pmhq_port;
-      quick_login_qq = config.quick_login_qq;
-      headless = config.headless;
+  # 使用配置管理模块的默认配置
+  defaultConfig = configLib.defaultConfig;
+
+  # 构建 LLOneBot 的主函数
+  buildLLOneBot =
+    userConfig:
+    let
+      config = configLib.mergeConfig userConfig;
+    in
+    rec {
+      llonebot-js = pkgs.callPackage ./llonebot-js.nix { };
+
+      pmhq = pkgs.callPackage ./pmhq.nix {
+        inherit config;
+      };
+
+      llonebot = pkgs.writeScriptBin "llonebot" ''
+        #!${pkgs.runtimeShell}
+
+        # llonebot 工作目录
+        if [ ! -f "~/.config/llonebot/llonebot.js" ]; then
+          mkdir -p ~/.config/llonebot
+          cp -rf ${llonebot-js}/js/* ~/.config/llonebot/
+        fi
+
+        ${pmhq}/bin/pmhq &
+
+        cd ~/.config/llonebot && \
+          ${pkgs.nodejs}/bin/node llonebot.js \
+          --pmhq-host=${config.pmhq_host} \
+          --pmhq-port=${toString config.pmhq_port}
+      '';
     };
-  };
 
-  llonebot = pkgs.writeScriptBin "llonebot" ''
-    #!${pkgs.runtimeShell}
+  # 构建 LLOneBot 沙盒版本的函数
+  buildLLOneBotSandbox =
+    userConfig:
+    let
+      config = configLib.mergeConfig userConfig;
+    in
+    pkgs.callPackage ./sandbox.nix { inherit config; };
 
-    # llonebot 工作目录
-    if [ ! -f "~/.config/llonebot/llonebot.js" ]; then
-      mkdir -p ~/.config/llonebot
-      cp -rf ${llonebot-js}/js/* ~/.config/llonebot/
-    fi
+in
+{
+  inherit buildLLOneBot buildLLOneBotSandbox defaultConfig;
 
-    ${pmhq}/bin/pmhq &
-
-    cd ~/.config/llonebot && \
-      ${pkgs.nodejs}/bin/node llonebot.js \
-      --pmhq-host=${config.pmhq_host} \
-      --pmhq-port=${toString config.pmhq_port}
-  '';
+  # 提供默认构建结果
+  default = buildLLOneBot { };
 }

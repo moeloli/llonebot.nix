@@ -72,22 +72,22 @@ pkgs.stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    mkdir -p $out/bin
-    mv pmhq-linux-* $out/bin/source-pmhq
-    chmod +x $out/bin/source-pmhq
-    head -n -1 ${qq}/opt/QQ/qq-wrapper > $out/bin/pmhq
-    echo "$out/bin/source-pmhq" >> $out/bin/pmhq
-    chmod +x $out/bin/pmhq
-    cat <<EOF > $out/bin/pmhq_config.json
-{
-  "qq_path": "${qq}/opt/QQ/qq",
-  "servers": [],
-  "default_host": "${config.host}",
-  "headless": ${boolToString config.headless},
-  "quick_login_qq": "${config.quick_login_qq}",
-  "default_port": ${toString config.port}
-}
-EOF
+        mkdir -p $out/bin
+        mv pmhq-linux-* $out/bin/source-pmhq
+        chmod +x $out/bin/source-pmhq
+        head -n -1 ${qq}/opt/QQ/qq-wrapper > $out/bin/pmhq
+        echo "$out/bin/source-pmhq" >> $out/bin/pmhq
+        chmod +x $out/bin/pmhq
+        cat <<EOF > $out/bin/pmhq_config.json
+    {
+      "qq_path": "${qq}/opt/QQ/qq",
+      "servers": [],
+      "default_host": "${config.pmhq_host}",
+      "headless": ${boolToString config.headless},
+      "quick_login_qq": "${config.quick_login_qq}",
+      "default_port": ${toString config.pmhq_port}
+    }
+    EOF
   '';
 
   meta = with lib; {

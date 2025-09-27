@@ -15,47 +15,28 @@
       let
         pkgs = import nixpkgs { inherit system; };
 
-        # 直接定义默认包
-        defaultConfig = {
-          vncport = 7081;
-          vncpassword = "vncpassword";
-          display = ":666";
-          novncport = 5900;
-          pmhq_host = "0.0.0.0";
-          pmhq_port = 13000;
-          headless = true;
-          quick_login_qq = ""; # 快速登录QQ号
-        };
+        # 导入包构建模块
+        packageLib = pkgs.callPackage ./package { };
 
       in
       rec {
         devShells.default = pkgs.mkShell { };
 
-        lib.buildLLOneBot = config: pkgs.callPackage ./package/default.nix { inherit config; };
-
-        lib.buildLLOneBotSandbox = config: pkgs.callPackage ./package/sandbox.nix { inherit config; };
-
-        llonebot-service =
-          (pkgs.callPackage ./package/llonebot-service.nix {
-            config = defaultConfig;
-          }).service;
+        lib = {
+          inherit (packageLib) buildLLOneBot buildLLOneBotSandbox;
+        };
 
         packages = rec {
-          pmhq = pkgs.callPackage ./package/pmhq.nix {
-            config = {
-              host = defaultConfig.pmhq_host;
-              port = defaultConfig.pmhq_port;
-              quick_login_qq = defaultConfig.quick_login_qq;
-              headless = defaultConfig.headless;
-            };
-          };
+          pmhq = packageLib.default.pmhq;
 
-          default = (lib.buildLLOneBot defaultConfig).llonebot;
+          llonebot-service =
+            (pkgs.callPackage ./package/llonebot-service.nix {
+              config = packageLib.defaultConfig;
+            }).service;
 
-          sandbox =
-            (pkgs.callPackage ./package/sandbox.nix {
-              config = defaultConfig;
-            }).sandbox;
+          default = packageLib.default.llonebot;
+
+          sandbox = (packageLib.buildLLOneBotSandbox { }).sandbox;
 
           # 添加 Docker 镜像构建
           dockerImage = pkgs.dockerTools.buildImage {
@@ -78,7 +59,6 @@
               Expose = [
                 "3000"
                 "3001"
-                "5900"
                 "5600"
                 "3080"
                 "13000"
