@@ -49,6 +49,11 @@ let
     export DISPLAY='${toString cfg.display}'
     export LIBGL_ALWAYS_SOFTWARE=1
 
+    export SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
+    export SSL_CERT_DIR=/etc/ssl/certs
+    export REQUESTS_CA_BUNDLE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
+    export CURL_CA_BUNDLE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
+
     # 从环境变量设置 VNC 密码
     : ''${VNC_PASSWD:="${toString cfg.vncpassword}"}
     export ENV_VNC_PASSWD=$VNC_PASSWD
@@ -66,9 +71,14 @@ let
     echo "127.0.0.1 localhost" >> /etc/hosts
     echo "::1 localhost" >> /etc/hosts
 
+    # SSL证书目录设置
+    mkdir -p /etc/ssl/certs /etc/pki/tls/certs
     # 符号链接
-    ln -s ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-bundle.crt
-    ln -s ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-certificates.crt
+    ln -sf ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-bundle.crt
+    ln -sf ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-certificates.crt
+    ln -sf ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/pki/tls/certs/ca-bundle.crt
+    # 为Python设置默认证书位置
+    ln -sf ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt /etc/ssl/cert.pem
     ln -s ${fonts} /etc/fonts/fonts.conf
     ln -s $(which env) /usr/bin/env
     ln -s $(which sh) /bin/sh
