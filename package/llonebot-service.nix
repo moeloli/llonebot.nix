@@ -36,10 +36,12 @@ let
           nixpkgs24_05.nodejs_22
           busybox
           xorg.xorgserver
-          x11vnc
           dbus
           dunst
           ffmpeg
+        ] ++ lib.optionals (!cfg.headless) [
+          x11vnc
+          novnc
         ]
       )
     }
@@ -101,7 +103,7 @@ let
     # 创建各个服务
     createService xvfb 'Xvfb ${toString cfg.display}'
 
-    if [ "${toString cfg.headless}" = "false" ]; then
+    if [ "${toString cfg.headless}" = "" ]; then
       createService x11vnc 'x11vnc ${
         lib.concatStringsSep " " [
           "-forever"
@@ -111,7 +113,7 @@ let
           "-shared"
         ]
       }'
-      createService novnc '${pkgs.novnc}/bin/novnc --listen ${toString cfg.novncport} --vnc 127.0.0.1:${toString cfg.vncport}'
+      createService novnc 'novnc --listen ${toString cfg.novncport} --vnc 127.0.0.1:${toString cfg.vncport}'
     fi
 
     createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
