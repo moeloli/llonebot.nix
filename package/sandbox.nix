@@ -13,7 +13,6 @@ in
 rec {
   sandbox = pkgs.writeScriptBin "sandbox" ''
     #!${pkgs.runtimeShell}
-    ${pkgs.busybox}/bin/mkdir -p data
     if [ -z "$VNC_PASSWD" ]; then
       VNC_PASSWD=${config.vncpassword}
     fi
@@ -25,7 +24,7 @@ rec {
       --setenv VNC_PASSWD $VNC_PASSWD \
       --ro-bind /nix/store /nix/store \
       --ro-bind ${pkgs.tzdata}/share/zoneinfo/Asia/Shanghai /etc/localtime \
-      --bind ./data /root/ \
+      --bind ${config.sandbox_root_dir} /root/ \
       --proc /proc \
       --dev /dev \
       --tmpfs /tmp \

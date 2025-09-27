@@ -13,6 +13,7 @@ let
     pmhq_port = 13000;
     headless = true;
     quick_login_qq = ""; # 快速登录QQ号
+    sandbox_root_dir = "/root/bot/llonebot"; # 沙盒数据持久化目录
   };
 
   # 合并用户配置和默认配置
