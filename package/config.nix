@@ -14,6 +14,7 @@ let
     headless = true;
     quick_login_qq = ""; # 快速登录QQ号
     sandbox_root_dir = "/root/bot/llonebot"; # 沙盒数据持久化目录
+    pmhq_config_path = "/root/llonebot/pmhq_config.json"; # PMHQ 配置文件路径
   };
 
   # 合并用户配置和默认配置

@@ -33,6 +33,7 @@ let
           dbus
           dunst
           ffmpeg
+          jq
         ]
         ++ lib.optionals (!cfg.headless) [
           x11vnc
@@ -57,6 +58,9 @@ let
     # 从环境变量设置 VNC 密码
     : ''${VNC_PASSWD:="${toString cfg.vncpassword}"}
     export ENV_VNC_PASSWD=$VNC_PASSWD
+
+    : ''${QUICK_LOGIN_QQ:="${toString cfg.quick_login_qq}"}
+    export ENV_QUICK_LOGIN_QQ=$QUICK_LOGIN_QQ
   '';
 
   # 创建必要的目录和文件
@@ -87,6 +91,12 @@ let
     mkdir -p /root/llonebot
     cp -rf ${llonebot-js}/js/* /root/llonebot/
     sed -i "s|\"ffmpeg\":\s*\"\"|\"ffmpeg\": \"${pkgs.ffmpeg}/bin/ffmpeg\"|g" "/root/llonebot/default_config.json"
+
+    if [ ! -f "${cfg.pmhq_config_path}" ]; then
+      cp -rf ${pmhq}/bin/pmhq_config.json "${cfg.pmhq_config_path}"
+    fi
+
+    jq ".quick_login_qq = \"$ENV_QUICK_LOGIN_QQ\"" "${cfg.pmhq_config_path}" > /tmp/pmhq_config_tmp.json && mv /tmp/pmhq_config_tmp.json "${cfg.pmhq_config_path}"
   '';
 
   # 配置 DBUS
@@ -124,7 +134,7 @@ let
     createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
     # 通知守护进程
     createService dunst 'dunst'
-    createService pmhq "${pmhq}/bin/pmhq"
+    createService pmhq "${pmhq}/bin/pmhq --config=${cfg.pmhq_config_path}"
     createService llonebot "cd /root/llonebot && node llonebot.js --pmhq-host=${cfg.pmhq_host} --pmhq-port=${toString cfg.pmhq_port}"
   '';
 

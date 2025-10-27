@@ -67,3 +67,8 @@ nix run github:LLOneBot/llonebot.nix#pmhq
 
 - 终端扫码
 - WebUI http://<宿主机IP>:3080 扫码
+
+## 配置自动登录QQ号
+
+- 设置环境变量 QUICK_LOGIN_QQ
+- 修改 `/root/bot/llonebot/pmhq_config.json` 的 `quick_login_qq` 即可
