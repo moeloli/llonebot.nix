@@ -1,7 +1,7 @@
 { ... }:
 {
   # Updated by ./update.sh - do not update manually!
-  # Last updated: 2025-11-25.
+  # Last updated: 2025-11-27.
 
   # ./update.sh pmhq 2.0.0
   pmhq_version = "5.0.2";
@@ -12,5 +12,5 @@
   # ./update.sh llonebot 4.4.1
   llonebot_version = "6.6.6";
   llonebot_url = "https://github.com/LLOneBot/LLOneBot/releases/download/v6.6.6/LLOneBot.zip";
-  llonebot_hash = "sha256-n2pdrhvy9TUdehBr1gn64kdgOz8NtbQOsIX/iTIIR8w=";
+  llonebot_hash = "sha256-N+HlvY8r/5RcPKyctECPyLX1vM1GJMYYIxnlnlNAhc0=";
 }
