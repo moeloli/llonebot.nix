@@ -41,7 +41,7 @@ jobs:
       run: |
         git config --local user.email "actions@github.com"
         git config --local user.name "GitHub Actions"
-        echo "LATEST_LLONEBOT_VERSION=$(echo "$(curl "https://api.github.com/repos/LLOneBot/LLOneBot/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
+        echo "LATEST_LLONEBOT_VERSION=$(echo "$(curl "https://api.github.com/repos/LLOneBot/LuckyLilliaBot/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
         echo "LATEST_PMHQ_VERSION=$(echo "$(curl "https://api.github.com/repos/linyuchen/PMHQ/releases/latest" | jq -r '.tag_name')" | sed 's/^.//')" >> $GITHUB_ENV
 
     - if: env.EVENT_TYPE == 'scheduled'
