@@ -27,7 +27,7 @@ let
         #!${pkgs.runtimeShell}
 
         # llonebot 工作目录
-        if [ ! -f "~/.config/llonebot/llonebot.js" ]; then
+        if [ ! -f "~/.config/llonebot/llbot.js" ]; then
           mkdir -p ~/.config/llonebot
           cp -rf ${llonebot-js}/js/* ~/.config/llonebot/
         fi
@@ -35,7 +35,7 @@ let
         ${pmhq}/bin/pmhq &
 
         cd ~/.config/llonebot && \
-          ${pkgs.nodejs}/bin/node llonebot.js \
+          ${pkgs.nodejs}/bin/node llbot.js \
           --pmhq-host=${config.pmhq_host} \
           --pmhq-port=${toString config.pmhq_port}
       '';

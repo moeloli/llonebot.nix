@@ -11,6 +11,6 @@
   pmhq_arm64_hash = "sha256-sdLbtSuiQIQaSkevF3bB5yzuySn2s707tqIKPHP7UMs=";
   # ./update.sh llonebot 4.4.1
   llonebot_version = "7.1.3";
-  llonebot_url = "https://github.com/LLOneBot/LLOneBot/releases/download/v7.1.3/LLOneBot.zip";
+  llonebot_url = "https://github.com/LLOneBot/LLOneBot/releases/download/v7.1.3/LLBot.zip";
   llonebot_hash = "sha256-CUoqjsmcuGc6I6evf27+qhq/k7vddyf3xRBJJVlteBg=";
 }
