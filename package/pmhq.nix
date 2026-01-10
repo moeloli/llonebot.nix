@@ -6,7 +6,7 @@
 }:
 let
   qq = pkgs.callPackage ./qq/package.nix {
-    libgbm = pkgs.mesa.drivers; # 显式传递 libgbm
+    libgbm = pkgs.mesa; # 显式传递 libgbm
     inherit (pkgs)
       alsa-lib
       libuuid
@@ -75,6 +75,7 @@ pkgs.stdenv.mkDerivation rec {
   installPhase = ''
         mkdir -p $out/bin
         mv pmhq-linux-* $out/bin/source-pmhq
+        mv libpmhq.so $out/bin/libpmhq.so
         chmod +x $out/bin/source-pmhq
         head -n -1 ${qq}/opt/QQ/qq-wrapper > $out/bin/pmhq
         echo "$out/bin/source-pmhq \$@" >> $out/bin/pmhq
