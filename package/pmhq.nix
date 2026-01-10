@@ -64,6 +64,7 @@ pkgs.stdenv.mkDerivation rec {
   buildInputs = with pkgs; [
     unzip
     zlib
+    libgcc
   ];
 
   inherit src;
