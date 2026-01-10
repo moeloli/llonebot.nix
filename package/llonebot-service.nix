@@ -134,7 +134,7 @@ let
     createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
     # 通知守护进程
     createService dunst 'dunst'
-    createService pmhq "${pmhq}/bin/pmhq --config=${cfg.pmhq_config_path}"
+    ${pmhq}/bin/pmhq --config=${cfg.pmhq_config_path}
     createService llonebot "cd /root/llonebot && node --enable-source-maps llbot.js --pmhq-host=${cfg.pmhq_host} --pmhq-port=${toString cfg.pmhq_port}"
   '';
 
