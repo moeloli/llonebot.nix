@@ -65,6 +65,8 @@ pkgs.stdenv.mkDerivation rec {
     unzip
     zlib
     libgcc
+    libssh2
+    curl
   ];
 
   inherit src;
@@ -77,7 +79,18 @@ pkgs.stdenv.mkDerivation rec {
         mv pmhq-linux-* $out/bin/source-pmhq
         mv libpmhq.so $out/bin/libpmhq.so
         chmod +x $out/bin/source-pmhq
-        head -n -1 ${qq}/opt/QQ/qq-wrapper > $out/bin/pmhq
+        
+        # Create wrapper script with proper library paths
+        cat > $out/bin/pmhq << 'WRAPPER_EOF'
+    #!/bin/sh
+    export LD_PRELOAD="${pkgs.libssh2}/lib/libssh2.so.1''${LD_PRELOAD:+:$LD_PRELOAD}"
+    export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.libGL pkgs.libuuid pkgs.libssh2 pkgs.curl ]}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    WRAPPER_EOF
+        
+        # Append QQ wrapper content (skip last line)
+        head -n -1 ${qq}/opt/QQ/qq-wrapper >> $out/bin/pmhq
+        
+        # Add pmhq execution
         echo "$out/bin/source-pmhq \$@" >> $out/bin/pmhq
         chmod +x $out/bin/pmhq
         cat <<EOF > $out/bin/pmhq_config.json
