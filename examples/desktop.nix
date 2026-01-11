@@ -3,7 +3,7 @@
     nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git/?ref=nixos-23.11";
     llonebot = {
       url = "github:LLOneBot/llonebot.nix"; # nix flake lock --update-input llonebot
-      inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+      inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     };
   };
 
