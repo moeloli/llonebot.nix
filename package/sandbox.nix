@@ -13,21 +13,23 @@ in
 rec {
   sandbox = pkgs.writeScriptBin "sandbox" ''
     #!${pkgs.runtimeShell}
-    if [ -z "$VNC_PASSWD" ]; then
-      VNC_PASSWD=${config.vncpassword}
-    fi
+    # 清理可能存在的 X11 socket
+    rm -rf /tmp/.X11-unix 2>/dev/null || true
+    
     ${pkgs.bubblewrap}/bin/bwrap \
       --unshare-all \
       --share-net \
       --as-pid-1 \
       --uid 0 --gid 0 \
-      --setenv VNC_PASSWD $VNC_PASSWD \
       --ro-bind /nix/store /nix/store \
       --ro-bind ${pkgs.tzdata}/share/zoneinfo/Asia/Shanghai /etc/localtime \
       --bind ${config.sandbox_root_dir} /root/ \
       --proc /proc \
       --dev /dev \
       --tmpfs /tmp \
+      --setenv XDG_RUNTIME_DIR /tmp/runtime \
+      --setenv WLR_BACKENDS headless \
+      --setenv WLR_LIBINPUT_NO_DEVICES 1 \
       ${llonebot-service}/bin/llonebot-service
   '';
 }

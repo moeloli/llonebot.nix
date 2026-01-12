@@ -17,13 +17,9 @@
             { pkgs, ... }:
             let
               llonebotConfig = {
-                vncport = 7081;
-                vncpassword = "vncpassword";
                 display = ":666";
-                novncport = 5900;
                 pmhq_host = "0.0.0.0";
                 pmhq_port = 13000;
-                headless = true;
                 quick_login_qq = ""; # 快速登录QQ号
               };
               myLLOneBot = (pkgs.llonebot.buildLLOneBot llonebotConfig).llonebot;

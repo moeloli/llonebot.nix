@@ -70,4 +70,4 @@ nix run github:LLOneBot/llonebot.nix#pmhq
 
 ## 配置自动登录QQ号
 
-- 设置环境变量 QUICK_LOGIN_QQ 或修改 `/root/llonebot/pmhq_config.json` 的 `quick_login_qq`
+- 设置环境变量 QUICK_LOGIN_QQ

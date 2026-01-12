@@ -93,17 +93,9 @@ pkgs.stdenv.mkDerivation rec {
         # Add pmhq execution
         echo "$out/bin/source-pmhq \$@" >> $out/bin/pmhq
         chmod +x $out/bin/pmhq
-        cat <<EOF > $out/bin/pmhq_config.json
+        cat <<EOF > $out/bin/config.json
     {
-      "qq_path": "${qq}/opt/QQ/qq",
-      "enable_gui": true,
-      "debug": false,
-      "qq_console": false,
-      "servers": [],
-      "default_host": "${config.pmhq_host}",
-      "headless": ${boolToString config.headless},
-      "quick_login_qq": "${config.quick_login_qq}",
-      "default_port": ${toString config.pmhq_port}
+      "qq_path": "${qq}/opt/QQ/qq"
     }
     EOF
   '';

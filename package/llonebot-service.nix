@@ -35,10 +35,6 @@ let
           ffmpeg
           jq
         ]
-        ++ lib.optionals (!cfg.headless) [
-          x11vnc
-          novnc
-        ]
       )
     }
     export FFMPEG_PATH=${pkgs.ffmpeg}/bin/ffmpeg
@@ -54,10 +50,6 @@ let
     export SSL_CERT_DIR=/etc/ssl/certs
     export REQUESTS_CA_BUNDLE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
     export CURL_CA_BUNDLE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
-
-    # 从环境变量设置 VNC 密码
-    : ''${VNC_PASSWD:="${toString cfg.vncpassword}"}
-    export ENV_VNC_PASSWD=$VNC_PASSWD
 
     : ''${QUICK_LOGIN_QQ:="${toString cfg.quick_login_qq}"}
     export ENV_QUICK_LOGIN_QQ=$QUICK_LOGIN_QQ
@@ -91,12 +83,6 @@ let
     mkdir -p /root/llonebot
     cp -rf ${llonebot-js}/js/* /root/llonebot/
     sed -i "s|\"ffmpeg\":\s*\"\"|\"ffmpeg\": \"${pkgs.ffmpeg}/bin/ffmpeg\"|g" "/root/llonebot/default_config.json"
-
-    if [ ! -f "${cfg.pmhq_config_path}" ]; then
-      cp -rf ${pmhq}/bin/pmhq_config.json "${cfg.pmhq_config_path}"
-    fi
-
-    jq ".quick_login_qq = \"$ENV_QUICK_LOGIN_QQ\"" "${cfg.pmhq_config_path}" > /tmp/pmhq_config_tmp.json && mv /tmp/pmhq_config_tmp.json "${cfg.pmhq_config_path}"
   '';
 
   # 配置 DBUS
@@ -115,26 +101,20 @@ let
       chmod +x /services/$1/run
     }
 
-    # 创建各个服务
-    createService xvfb 'Xvfb ${toString cfg.display}'
+    export WLR_BACKENDS=headless
+    export WLR_LIBINPUT_NO_DEVICES=1
+    export XDG_RUNTIME_DIR=/tmp/runtime
+    export NIXOS_OZONE_WL=1
+    
+    mkdir -p $XDG_RUNTIME_DIR
+    chmod 700 $XDG_RUNTIME_DIR
+    
+    rm -rf /tmp/.X11-unix
+    mkdir -p /tmp/.X11-unix
+    chmod 1777 /tmp/.X11-unix
+    
+    createService cage "${pkgs.cage}/bin/cage -d -s -- ${pmhq}/bin/pmhq --qq-path=\"\$(jq -r '.qq_path' ${pmhq}/bin/config.json)\" --headless --qq=\$ENV_QUICK_LOGIN_QQ"
 
-    if [ "${toString cfg.headless}" = "" ]; then
-      createService x11vnc 'x11vnc ${
-        lib.concatStringsSep " " [
-          "-forever"
-          "-display ${toString cfg.display}"
-          "-rfbport ${toString cfg.vncport}"
-          "-passwd \"$ENV_VNC_PASSWD\""
-          "-shared"
-        ]
-      }'
-      createService novnc 'novnc --listen ${toString cfg.novncport} --vnc 127.0.0.1:${toString cfg.vncport}'
-    fi
-
-    createService dbus 'dbus-daemon --nofork --config-file=/etc/dbus/system.conf'
-    # 通知守护进程
-    createService dunst 'dunst'
-    ${pmhq}/bin/pmhq --config=${cfg.pmhq_config_path}
     createService llonebot "cd /root/llonebot && node --enable-source-maps llbot.js --pmhq-host=${cfg.pmhq_host} --pmhq-port=${toString cfg.pmhq_port}"
   '';
 
