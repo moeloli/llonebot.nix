@@ -65,6 +65,7 @@ let
     echo "root:x:0:" > /etc/group
     echo "nameserver 114.114.114.114" > /etc/resolv.conf
     echo "127.0.0.1 localhost" >> /etc/hosts
+    echo "172.17.0.1 host.docker.internal" >> /etc/hosts
     echo "::1 localhost" >> /etc/hosts
 
     # SSL证书目录设置
