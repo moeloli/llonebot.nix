@@ -35,7 +35,7 @@ let
         ${pmhq}/bin/pmhq &
 
         cd ~/.config/llonebot && \
-          ${pkgs.nodejs}/bin/node llbot.js \
+          ${pkgs.nodejs_24}/bin/node llbot.js \
           --pmhq-host=${config.pmhq_host} \
           --pmhq-port=${toString config.pmhq_port}
       '';
