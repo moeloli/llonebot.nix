@@ -25,7 +25,7 @@ let
         [
           pkgs.nodejs_24
           busybox
-          xorg.xorgserver
+          xorg-server
           dbus
           dunst
           ffmpeg

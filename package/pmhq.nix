@@ -24,9 +24,8 @@ let
       libpulseaudio
       libGL
       nss
-      xorg
+      libxdamage
       systemd
-      vips
       at-spi2-core
       autoPatchelfHook
       makeShellWrapper
