@@ -78,6 +78,7 @@ pkgs.stdenv.mkDerivation rec {
         mkdir -p $out/bin
         mv pmhq-linux-* $out/bin/source-pmhq
         mv libpmhq.so $out/bin/libpmhq.so
+        cp ${pkgs.stdenv.cc.bintools.dynamicLinker} $out/bin/pmhq-loader
         chmod +x $out/bin/source-pmhq
         
         # Create wrapper script with proper library paths
@@ -90,9 +91,10 @@ pkgs.stdenv.mkDerivation rec {
         # Append QQ wrapper content (skip last line)
         head -n -1 ${qq}/opt/QQ/qq-wrapper >> $out/bin/pmhq
         
-        # PMHQ 8.x is a self-decompressing ELF that patchelf cannot modify,
-        # so invoke it through Nix's dynamic linker explicitly.
-        echo "exec ${pkgs.stdenv.cc.bintools.dynamicLinker} $out/bin/source-pmhq \"\$@\"" >> $out/bin/pmhq
+        # PMHQ 8.x resolves libpmhq.so relative to /proc/self/exe but its
+        # self-decompressing ELF cannot be patched. Keep a loader beside the
+        # shared object so the lookup remains inside $out/bin.
+        echo "exec $out/bin/pmhq-loader $out/bin/source-pmhq \"\$@\"" >> $out/bin/pmhq
         chmod +x $out/bin/pmhq
         cat <<EOF > $out/bin/config.json
     {
