@@ -90,8 +90,9 @@ pkgs.stdenv.mkDerivation rec {
         # Append QQ wrapper content (skip last line)
         head -n -1 ${qq}/opt/QQ/qq-wrapper >> $out/bin/pmhq
         
-        # Add pmhq execution
-        echo "$out/bin/source-pmhq \$@" >> $out/bin/pmhq
+        # PMHQ 8.x is a self-decompressing ELF that patchelf cannot modify,
+        # so invoke it through Nix's dynamic linker explicitly.
+        echo "exec ${pkgs.stdenv.cc.bintools.dynamicLinker} $out/bin/source-pmhq \"\$@\"" >> $out/bin/pmhq
         chmod +x $out/bin/pmhq
         cat <<EOF > $out/bin/config.json
     {
