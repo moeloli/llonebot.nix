@@ -1,13 +1,31 @@
-url=$1
+#!/usr/bin/env bash
+set -e
 
-hash=$(echo "$url" | grep -oP '/QQNT/\K[^/]+')
-linux_version=$(echo "$url" | grep -oP 'linuxqq_\K[^_]+')
+url=${1:?Usage: update.sh URL}
+filename=${url##*/}
 
-linux_x86_64_url="https://dldir1v6.qq.com/qqfile/qq/QQNT/${hash}/linuxqq_${linux_version}_amd64.deb"
-linux_aarch64_url="https://dldir1v6.qq.com/qqfile/qq/QQNT/${hash}/linuxqq_${linux_version}_arm64.deb"
+case "$filename" in
+  QQ_*_amd64_01.deb)
+    artifact_prefix=${filename%_amd64_01.deb}
+    ;;
+  QQ_*_arm64_01.deb)
+    artifact_prefix=${filename%_arm64_01.deb}
+    ;;
+  *)
+    echo "Unsupported QQ download URL: $url" >&2
+    exit 1
+    ;;
+esac
 
-linux_x86_64_hash=$(nix-prefetch-url $linux_x86_64_url)
-linux_aarch64_hash=$(nix-prefetch-url $linux_aarch64_url)
+version_with_build=${artifact_prefix#QQ_}
+linux_version=${version_with_build/_/-}
+base_url=${url%/*}
+
+linux_x86_64_url="${base_url}/${artifact_prefix}_amd64_01.deb"
+linux_aarch64_url="${base_url}/${artifact_prefix}_arm64_01.deb"
+
+linux_x86_64_hash=$(nix-prefetch-url "$linux_x86_64_url")
+linux_aarch64_hash=$(nix-prefetch-url "$linux_aarch64_url")
 
 # use friendlier hashes
 linux_x86_64_hash=$(nix --extra-experimental-features nix-command hash convert --to sri --hash-algo sha256 "$linux_x86_64_hash")
