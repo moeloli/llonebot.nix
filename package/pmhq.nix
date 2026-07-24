@@ -97,7 +97,8 @@ pkgs.stdenv.mkDerivation rec {
         chmod +x $out/bin/pmhq
         cat <<EOF > $out/bin/config.json
     {
-      "qq_path": "${qq}/opt/QQ/qq"
+      "qq_path": "${qq}/opt/QQ/qq",
+      "auth-token": "${config.pmhq_auth_token}"
     }
     EOF
   '';

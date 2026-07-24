@@ -20,6 +20,7 @@
                 display = ":666";
                 pmhq_host = "0.0.0.0";
                 pmhq_port = 13000;
+                pmhq_auth_token = ""; # PMHQ auth token
                 quick_login_qq = ""; # 快速登录QQ号
               };
               myLLOneBot = (pkgs.llonebot.buildLLOneBot llonebotConfig).llonebot;

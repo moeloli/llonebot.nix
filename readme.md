@@ -13,6 +13,8 @@
 version: "3"
 services:
     llonebot:
+        environment:
+            - AUTH_TOKEN= # PMHQ auth-token
         volumes:
             - ./QQ:/root/.config/QQ # 挂载 QQ 配置目录
             - ./llonebot:/root/llonebot # 挂载 llonebot 数据目录
@@ -32,6 +34,7 @@ services:
 ```bash
 docker run -d \
   --name llonebot \
+  -e AUTH_TOKEN="" \
   -p 3000:3000 \
   -p 3001:3001 \
   -p 5600:5600 \

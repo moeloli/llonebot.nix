@@ -49,6 +49,8 @@ let
 
     : ''${QUICK_LOGIN_QQ:="${toString cfg.quick_login_qq}"}
     export ENV_QUICK_LOGIN_QQ=$QUICK_LOGIN_QQ
+    : ''${AUTH_TOKEN:="${toString cfg.pmhq_auth_token}"}
+    export AUTH_TOKEN=$AUTH_TOKEN
   '';
 
   # 创建必要的目录和文件
@@ -87,7 +89,9 @@ let
     cp ${pkgs.dbus}/share/dbus-1/system.conf /etc/dbus/system.conf
     sed -i 's/<user>messagebus<\/user>/<user>root<\/user>/' /etc/dbus/system.conf
     sed -i 's/<deny/<allow/' /etc/dbus/system.conf
-    rm -rf /run/dbus/pid
+    mkdir -p /run/dbus
+    rm -f /run/dbus/pid /run/dbus/system_bus_socket
+    ${pkgs.dbus}/bin/dbus-daemon --system --fork --config-file=/etc/dbus/system.conf
   '';
 
   # 创建服务函数
@@ -110,7 +114,7 @@ let
     mkdir -p /tmp/.X11-unix
     chmod 1777 /tmp/.X11-unix
     
-    createService cage "${pkgs.cage}/bin/cage -d -s -- ${pmhq}/bin/pmhq --qq-path=\"\$(jq -r '.qq_path' ${pmhq}/bin/config.json)\" --headless --qq=\$ENV_QUICK_LOGIN_QQ"
+    createService cage "${pkgs.cage}/bin/cage -d -s -- ${pmhq}/bin/pmhq --qq-path=\"\$(jq -r '.qq_path' ${pmhq}/bin/config.json)\" --headless --qq=\$ENV_QUICK_LOGIN_QQ --auth-token=\$AUTH_TOKEN"
 
     createService llonebot "cd /root/llonebot && node --enable-source-maps llbot.js --pmhq-host=${cfg.pmhq_host} --pmhq-port=${toString cfg.pmhq_port}"
   '';

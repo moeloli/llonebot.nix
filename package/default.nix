@@ -32,7 +32,7 @@ let
           cp -rf ${llonebot-js}/js/* ~/.config/llonebot/
         fi
 
-        ${pmhq}/bin/pmhq &
+        ${pmhq}/bin/pmhq --auth-token=${config.pmhq_auth_token} &
 
         cd ~/.config/llonebot && \
           ${pkgs.nodejs_24}/bin/node llbot.js \
