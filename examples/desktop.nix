@@ -17,7 +17,6 @@
             { pkgs, ... }:
             let
               llonebotConfig = {
-                display = ":666";
                 pmhq_host = "0.0.0.0";
                 pmhq_port = 13000;
                 pmhq_auth_token = ""; # PMHQ auth token

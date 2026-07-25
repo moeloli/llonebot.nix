@@ -13,9 +13,7 @@ in
 rec {
   sandbox = pkgs.writeScriptBin "sandbox" ''
     #!${pkgs.runtimeShell}
-    # 清理可能存在的 X11 socket
-    rm -rf /tmp/.X11-unix 2>/dev/null || true
-    
+
     ${pkgs.bubblewrap}/bin/bwrap \
       --unshare-all \
       --share-net \

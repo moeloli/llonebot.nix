@@ -5,7 +5,6 @@
 let
   # 默认配置
   defaultConfig = {
-    display = ":666";
     pmhq_host = "0.0.0.0";
     pmhq_port = 13000;
     quick_login_qq = ""; # 快速登录QQ号

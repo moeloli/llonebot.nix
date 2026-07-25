@@ -25,7 +25,6 @@ let
         [
           pkgs.nodejs_24
           busybox
-          xorg-server
           dbus
           dunst
           ffmpeg
@@ -39,8 +38,6 @@ let
     export XDG_CONFIG_HOME=/root/.config
     export TERM=xterm
     export DBUS_SESSION_BUS_ADDRESS='unix:path=/run/dbus/system_bus_socket'
-    export DISPLAY='${toString cfg.display}'
-    export LIBGL_ALWAYS_SOFTWARE=1
 
     export SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
     export SSL_CERT_DIR=/etc/ssl/certs
@@ -109,10 +106,6 @@ let
     
     mkdir -p $XDG_RUNTIME_DIR
     chmod 700 $XDG_RUNTIME_DIR
-    
-    rm -rf /tmp/.X11-unix
-    mkdir -p /tmp/.X11-unix
-    chmod 1777 /tmp/.X11-unix
     
     createService cage "${pkgs.cage}/bin/cage -d -s -- ${pmhq}/bin/pmhq --qq-path=\"\$(jq -r '.qq_path' ${pmhq}/bin/config.json)\" --headless --qq=\$ENV_QUICK_LOGIN_QQ --auth-token=\$AUTH_TOKEN"
 
