@@ -26,9 +26,7 @@ let
           pkgs.nodejs_24
           busybox
           dbus
-          dunst
           ffmpeg
-          jq
         ]
       )
     }
@@ -45,9 +43,7 @@ let
     export CURL_CA_BUNDLE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
 
     : ''${QUICK_LOGIN_QQ:="${toString cfg.quick_login_qq}"}
-    export ENV_QUICK_LOGIN_QQ=$QUICK_LOGIN_QQ
     : ''${AUTH_TOKEN:="${toString cfg.pmhq_auth_token}"}
-    export AUTH_TOKEN=$AUTH_TOKEN
   '';
 
   # 创建必要的目录和文件
@@ -107,7 +103,7 @@ let
     mkdir -p $XDG_RUNTIME_DIR
     chmod 700 $XDG_RUNTIME_DIR
     
-    createService cage "${pkgs.cage}/bin/cage -d -s -- ${pmhq}/bin/pmhq --qq-path=\"\$(jq -r '.qq_path' ${pmhq}/bin/config.json)\" --headless --qq=\$ENV_QUICK_LOGIN_QQ --auth-token=\$AUTH_TOKEN"
+    createService cage "${pkgs.cage}/bin/cage -d -s -- ${pmhq}/bin/pmhq --qq-path=${pmhq.qq}/opt/QQ/qq --headless --qq=\$QUICK_LOGIN_QQ --auth-token=\$AUTH_TOKEN"
 
     createService llonebot "cd /root/llonebot && node --enable-source-maps llbot.js --pmhq-host=${cfg.pmhq_host} --pmhq-port=${toString cfg.pmhq_port}"
   '';

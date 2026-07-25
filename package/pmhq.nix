@@ -103,6 +103,11 @@ pkgs.stdenv.mkDerivation rec {
     EOF
   '';
 
+  # 通过 passthru 导出 qq
+  passthru = {
+    inherit qq;
+  };
+
   meta = with lib; {
     description = "Pure memory hook QQNT";
     homepage = "https://github.com/linyuchen/PMHQ";
