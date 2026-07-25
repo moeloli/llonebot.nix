@@ -25,7 +25,6 @@ let
         [
           pkgs.nodejs_24
           busybox
-          dbus
           ffmpeg
         ]
       )
@@ -36,6 +35,7 @@ let
     export XDG_CONFIG_HOME=/root/.config
     export TERM=xterm
     export DBUS_SESSION_BUS_ADDRESS='unix:path=/run/dbus/system_bus_socket'
+    export NODE_ENV=production
 
     export SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
     export SSL_CERT_DIR=/etc/ssl/certs
@@ -103,9 +103,9 @@ let
     mkdir -p $XDG_RUNTIME_DIR
     chmod 700 $XDG_RUNTIME_DIR
     
-    createService cage "${pkgs.cage}/bin/cage -d -s -- ${pmhq}/bin/pmhq --qq-path=${pmhq.qq}/opt/QQ/qq --headless --qq=\$QUICK_LOGIN_QQ --auth-token=\$AUTH_TOKEN"
+    createService cage "exec ${pkgs.cage}/bin/cage -d -s -- ${pmhq}/bin/pmhq --qq-path=${pmhq.qq}/opt/QQ/qq --headless --qq=\$QUICK_LOGIN_QQ --auth-token=\$AUTH_TOKEN"
 
-    createService llonebot "cd /root/llonebot && node --enable-source-maps llbot.js --pmhq-host=${cfg.pmhq_host} --pmhq-port=${toString cfg.pmhq_port}"
+    createService llonebot "cd /root/llonebot && exec node llbot.js --pmhq-host=${cfg.pmhq_host} --pmhq-port=${toString cfg.pmhq_port}"
   '';
 
 in
