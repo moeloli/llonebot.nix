@@ -34,7 +34,7 @@ services:
 ```bash
 docker run -d \
   --name llonebot \
-  -e AUTH_TOKEN="" \
+  -e AUTH_TOKEN="xxx" \
   -p 3000:3000 \
   -p 3001:3001 \
   -p 5600:5600 \
@@ -74,3 +74,7 @@ nix run github:LLOneBot/llonebot.nix#pmhq
 ## 配置自动登录QQ号
 
 - 设置环境变量 QUICK_LOGIN_QQ
+
+## 配置 PMHQ 授权令牌
+
+- 设置环境变量 `AUTH_TOKEN`，服务会将其作为 `--auth-token` 参数传给 PMHQ
